@@ -1,11 +1,14 @@
-import demoEn from "./demo-en"
-
 const en = {
   common: {
     ok: "OK!",
     cancel: "Cancel",
     back: "Back",
     logOut: "Log Out",
+  },
+  navigator: {
+    contactsTab: "Contacts",
+    chatsTab: "Chats",
+    settingsTab: "Settings",
   },
   welcomeScreen: {
     postscript:
@@ -121,8 +124,11 @@ const en = {
         "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
     },
   },
-
-  ...demoEn,
+  chatScreen: {
+    title: "Chat with {{name}}",
+    inputPlaceholder: "Type a message...",
+    send: "Send",
+  },
 }
 
 export default en

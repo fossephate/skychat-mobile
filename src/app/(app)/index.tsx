@@ -23,7 +23,7 @@ export default observer(function WelcomeScreen() {
 
   // useHeader(
   //   {
-  //     rightTx: "common.logOut",
+  //     rightTx: "common:logOut",
   //     onRightPress: logout,
   //   },
   //   [logout],
@@ -38,19 +38,19 @@ export default observer(function WelcomeScreen() {
         <Text
           testID="welcome-heading"
           style={$welcomeHeading}
-          tx="welcomeScreen.readyForLaunch"
+          tx="welcomeScreen:readyForLaunch"
           preset="heading"
         />
-        <Text tx="welcomeScreen.exciting" preset="subheading" />
+        <Text tx="welcomeScreen:exciting" preset="subheading" />
         <Image style={$welcomeFace} source={welcomeFace} resizeMode="contain" />
       </View>
 
       <View style={[$bottomContainer, $bottomContainerInsets]}>
-        <Text tx="welcomeScreen.postscript" size="md" />
+        <Text tx="welcomeScreen:postscript" size="md" />
         <Button
           testID="next-screen-button"
           preset="reversed"
-          tx="welcomeScreen.letsGo"
+          tx="welcomeScreen:letsGo"
           onPress={goNext}
         />
       </View>

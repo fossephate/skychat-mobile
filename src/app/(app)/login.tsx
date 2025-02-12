@@ -51,6 +51,15 @@ export default observer(function Login(_props) {
     router.replace("/")
   }
 
+  function loginWithBluesky() {
+    // Implement Bluesky authentication flow here
+    // This would typically involve opening a web view or browser for OAuth
+    console.log("Initiating Bluesky login...")
+    // After successful authentication:
+    // setAuthToken(blueskyToken)
+    // router.replace("/")
+  }
+
   const PasswordRightAccessory: ComponentType<TextFieldAccessoryProps> = useMemo(
     () =>
       function PasswordRightAccessory(props: TextFieldAccessoryProps) {
@@ -73,9 +82,9 @@ export default observer(function Login(_props) {
       contentContainerStyle={$screenContentContainer}
       safeAreaEdges={["top", "bottom"]}
     >
-      <Text testID="login-heading" tx="loginScreen.signIn" preset="heading" style={$signIn} />
-      <Text tx="loginScreen.enterDetails" preset="subheading" style={$enterDetails} />
-      {attemptsCount > 2 && <Text tx="loginScreen.hint" size="sm" weight="light" style={$hint} />}
+      <Text testID="login-heading" tx="loginScreen:logIn" preset="heading" style={$signIn} />
+      <Text tx="loginScreen:enterDetails" preset="subheading" style={$enterDetails} />
+      {attemptsCount > 2 && <Text tx="loginScreen:hint" size="sm" weight="light" style={$hint} />}
 
       <TextField
         value={authEmail}
@@ -85,8 +94,8 @@ export default observer(function Login(_props) {
         autoComplete="email"
         autoCorrect={false}
         keyboardType="email-address"
-        labelTx="loginScreen.emailFieldLabel"
-        placeholderTx="loginScreen.emailFieldPlaceholder"
+        labelTx="loginScreen:emailFieldLabel"
+        placeholderTx="loginScreen:emailFieldPlaceholder"
         helper={error}
         status={error ? "error" : undefined}
         onSubmitEditing={() => authPasswordInput.current?.focus()}
@@ -101,18 +110,34 @@ export default observer(function Login(_props) {
         autoComplete="password"
         autoCorrect={false}
         secureTextEntry={isAuthPasswordHidden}
-        labelTx="loginScreen.passwordFieldLabel"
-        placeholderTx="loginScreen.passwordFieldPlaceholder"
+        labelTx="loginScreen:passwordFieldLabel"
+        placeholderTx="loginScreen:passwordFieldPlaceholder"
         onSubmitEditing={login}
         RightAccessory={PasswordRightAccessory}
       />
 
       <Button
         testID="login-button"
-        tx="loginScreen.tapToSignIn"
+        tx="loginScreen:tapToLogIn"
         style={$tapButton}
         preset="reversed"
         onPress={login}
+      />
+
+      <Button
+        testID="bluesky-login-button"
+        text="Login with Bluesky"
+        style={$blueskyButton}
+        preset="default"
+        onPress={loginWithBluesky}
+        LeftAccessory={(props) => (
+          <Icon
+            icon="community" // You'll need to add a Bluesky icon to your icon set
+            color={colors.palette.neutral800}
+            containerStyle={props.style}
+            size={20}
+          />
+        )}
       />
     </Screen>
   )
@@ -142,4 +167,12 @@ const $textField: ViewStyle = {
 
 const $tapButton: ViewStyle = {
   marginTop: spacing.xs,
+}
+
+
+const $blueskyButton: ViewStyle = {
+  marginTop: spacing.md,
+  backgroundColor: colors.palette.neutral200,
+  borderWidth: 1,
+  borderColor: colors.palette.neutral400,
 }

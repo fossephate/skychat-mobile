@@ -5,11 +5,10 @@ import { colors, spacing } from "src/theme"
 
 export default function SettingsScreen() {
   const userProfile = {
-    name: "Sarah Mitchell",
-    handle: "@sarahmitchell",
+    name: "Bob",
+    handle: "@bob",
     bio: "Digital creator & tech enthusiast",
-    avatar: "https://i.pravatar.cc/150?u=sarah",
-    verified: true,
+    avatar: "https://i.pravatar.cc/150?u=bob",
   }
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true)
@@ -33,7 +32,6 @@ export default function SettingsScreen() {
           <View style={$profileHeader}>
             <View style={$avatarContainer}>
               <Image source={{ uri: userProfile.avatar }} style={$avatar} />
-              {userProfile.verified && <View style={$verifiedBadge}>✓</View>}
             </View>
             <View style={$profileInfo}>
               <Text preset="heading" style={$name}>

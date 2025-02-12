@@ -25,7 +25,8 @@
       ],
       "assets/*": [
         "./assets/*"
-      ]
+      ],
+      "src/*": ["src/*"]
     },
     "typeRoots": [
       "./node_modules/@types",

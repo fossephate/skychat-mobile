@@ -13,37 +13,10 @@ import {
 } from "react-native"
 import { Screen, Text, ListItem } from "src/components"
 import { colors, spacing } from "src/theme"
+import { useRouter } from "expo-router"
+import { router } from "expo-router"
+import { Chat, renderChatItem, User } from "src/components/Chat/ChatItem"
 
-interface User {
-  id: string
-  name: string
-  avatar?: string
-  online: boolean
-  verified?: boolean
-}
-
-interface Chat {
-  id: string
-  members: User[]
-  name?: string
-  lastMessage: {
-    text: string
-    sender: User
-    timestamp: string
-    read: boolean
-  }
-  unreadCount: number
-  pinned?: boolean
-  muted?: boolean
-}
-
-const SELF_USER: User = {
-  id: "self",
-  name: "You",
-  avatar: "https://i.pravatar.cc/150?u=self",
-  online: true,
-  verified: true,
-}
 
 const UserSelectDrawer = ({ isVisible, onClose, users }: {
   isVisible: boolean
@@ -123,54 +96,25 @@ const UserSelectDrawer = ({ isVisible, onClose, users }: {
   )
 }
 
-// Helper to get chat name if not explicitly set
-const getChatName = (chat: Chat, currentUserId: string): string => {
-  if (chat.name) return chat.name
 
-  const otherMembers = chat.members.filter(member => member.id !== currentUserId)
-  if (chat.members.length === 2) {
-    return otherMembers[0].name
-  }
-  return otherMembers.slice(0, 3).map(m => m.name).join(", ")
-}
 
 // Generate realistic chats data
 const generateChats = (): Chat[] => {
-  const users: User[] = [
-    {
-      id: "u1",
-      name: "Sarah Mitchell",
-      avatar: "https://i.pravatar.cc/150?u=sarah",
-      online: true,
-      verified: true,
-    },
-    {
-      id: "u2",
-      name: "Alex Thompson",
-      avatar: "https://i.pravatar.cc/150?u=alex",
-      online: false,
-      verified: true,
-    },
-    ...Array(8).fill(null).map((_, index) => ({
-      id: `u${index + 3}`,
-      name: `User ${index + 3}`,
-      avatar: `https://i.pravatar.cc/150?u=user${index + 3}`,
-      online: Math.random() > 0.7,
-      verified: Math.random() > 0.8,
-    })),
-  ]
+  const users = generateUsers()
+
+  const group_names = ["Design Team", "Marketing Team", "Engineering Team", "Product Team", "Sales Team", "Support Team", "Finance Team", "HR Team", "Legal Team", "IT Team"]
 
   const chats: Chat[] = [
     {
       id: "dm1",
-      members: [SELF_USER, users[0]],
+      members: [SELF_USER, users[1]],
       lastMessage: {
         text: "Looking forward to our meeting tomorrow! 📅",
-        sender: users[0],
+        sender: users[1],
         timestamp: "2m",
         read: false,
       },
-      unreadCount: 2,
+      unreadCount: 0,
       pinned: true,
     },
     {
@@ -186,16 +130,20 @@ const generateChats = (): Chat[] => {
       unreadCount: 0,
       pinned: true,
     },
-    ...Array(10).fill(null).map((_, index) => {
+    ...Array(20).fill(null).map((_, index) => {
       const chatMembers = [SELF_USER];
       const numUsers = Math.floor(Math.random() * 5) + 1
-      chatMembers.push(...users.slice(0, numUsers))
+      // get a random selection of users:
+      const randomUsers = users.sort(() => Math.random() - 0.5).slice(0, numUsers)
+      chatMembers.push(...randomUsers)
 
       const lastMessageSender = chatMembers[Math.floor(Math.random() * chatMembers.length)]
 
+      const group_name = numUsers == 2 ? group_names[index % group_names.length] : "";
+
       return {
         id: `chat-${index}`,
-        name: `Group ${index}`,
+        name: group_name,
         members: chatMembers,
         lastMessage: {
           text: `Message ${index}`,
@@ -221,112 +169,43 @@ const generateUsers = (): User[] => [
   {
     id: "u1",
     name: "Alice Smith",
-    avatar: "https://i.pravatar.cc/150?u=alice",
+    avatar: `https://i.pravatar.cc/150?u=${Math.random()}`,
     online: true,
     verified: false,
   },
   {
     id: "u2",
     name: "Bob Johnson",
-    avatar: "https://i.pravatar.cc/150?u=bob",
+    avatar: `https://i.pravatar.cc/150?u=${Math.random()}`,
     online: false,
     verified: false,
   },
   ...Array(20).fill(null).map((_, index) => ({
     id: `u${index + 3}`,
     name: `User ${index + 3}`,
-    avatar: `https://i.pravatar.cc/150?u=user${index + 3}`,
+    avatar: `https://i.pravatar.cc/150?u=user${index + 3}${Math.random()}`,
     online: Math.random() > 0.7,
     verified: Math.random() > 0.8,
   })),
 ]
+
+const SELF_USER: User = {
+  id: "self",
+  name: "You",
+  avatar: "https://i.pravatar.cc/150?u=self",
+  online: true,
+}
 
 export default function ChatsScreen() {
   const [searchQuery, setSearchQuery] = useState("")
   const [chats] = useState(generateChats())
   const [users] = useState(generateUsers())
   const [composeDrawerOpen, setComposeDrawerOpen] = useState(false)
+  const router = useRouter()
 
-  const renderChatAvatar = (chat: Chat) => {
-    const isDM = chat.members.length === 2
-    const otherMember = chat.members.find(member => member.id !== SELF_USER.id)
 
-    if (isDM && otherMember) {
-      return (
-        <View style={$avatarContainer}>
-          <Image source={{ uri: otherMember.avatar }} style={$avatar} />
-          {otherMember.online && <View style={$onlineBadge} />}
-          {otherMember.verified && <View style={$verifiedBadge}>✓</View>}
-        </View>
-      )
-    } else {
-      return (
-        <View style={$avatarContainer}>
-          <View style={[$avatar, $groupAvatar]}>
-            <Text style={$groupAvatarText}>
-              {chat.name?.[0]?.toUpperCase() || getChatName(chat, SELF_USER.id)[0]}
-            </Text>
-          </View>
-          {!isDM && (
-            <View style={$memberCount}>
-              <Text style={$memberCountText}>{chat.members.length}</Text>
-            </View>
-          )}
-        </View>
-      )
-    }
-  }
 
-  const renderChat = ({ item: chat }: { item: Chat }) => (
-    <TouchableOpacity activeOpacity={0.7}>
-      <View style={[$chatCard, chat.pinned && $pinnedChat]}>
-        <ListItem
-          LeftComponent={renderChatAvatar(chat)}
-          text={getChatName(chat, SELF_USER.id)}
-          textStyle={[
-            $chatName,
-            !chat.lastMessage.read && $unreadChatName,
-          ]}
-          secondaryText={
-            <View style={$messageContainer}>
-              <Text
-                style={[
-                  $messageText,
-                  !chat.lastMessage.read && $unreadMessageText,
-                  chat.muted && $mutedText,
-                ]}
-                numberOfLines={1}
-              >
-                {chat.members.length > 2 && (
-                  <Text style={$senderName}>{chat.lastMessage.sender.name}: </Text>
-                )}
-                {chat.lastMessage.text}
-              </Text>
-            </View>
-          }
-          RightComponent={
-            <View style={$rightContainer}>
-              <Text style={[
-                $timestamp,
-                !chat.lastMessage.read && $unreadTimestamp,
-                chat.muted && $mutedText,
-              ]}>
-                {chat.lastMessage.timestamp}
-              </Text>
-              {chat.unreadCount > 0 && (
-                <View style={[$unreadBadge, chat.muted && $mutedBadge]}>
-                  <Text style={$unreadText}>{chat.unreadCount}</Text>
-                </View>
-              )}
-              {chat.muted && <Text style={$mutedIcon}>🔇</Text>}
-              {chat.pinned && <Text style={$pinnedIcon}>📌</Text>}
-            </View>
-          }
-          style={$listItem}
-        />
-      </View>
-    </TouchableOpacity>
-  )
+
 
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContainer}>
@@ -354,7 +233,7 @@ export default function ChatsScreen() {
 
       <FlatList
         data={chats}
-        renderItem={renderChat}
+        renderItem={renderChatItem}
         keyExtractor={(item) => item.id}
         contentContainerStyle={$listContent}
         showsVerticalScrollIndicator={false}
@@ -462,31 +341,7 @@ const $groupAvatarText: TextStyle = {
   fontWeight: "bold",
 }
 
-const $onlineBadge: ViewStyle = {
-  position: "absolute",
-  bottom: 0,
-  right: 0,
-  width: 14,
-  height: 14,
-  borderRadius: 7,
-  backgroundColor: "#4CAF50",
-  borderWidth: 2,
-  borderColor: colors.background,
-}
 
-const $verifiedBadge: ViewStyle = {
-  position: "absolute",
-  bottom: -2,
-  right: -2,
-  backgroundColor: colors.palette.primary500,
-  borderRadius: 10,
-  width: 20,
-  height: 20,
-  justifyContent: "center",
-  alignItems: "center",
-  borderWidth: 2,
-  borderColor: colors.background,
-}
 
 const $memberCount: ViewStyle = {
   position: "absolute",
@@ -527,7 +382,7 @@ const $messageContainer: ViewStyle = {
 
 const $messageText: TextStyle = {
   fontSize: 14,
-  color: colors.dim,
+  color: colors.palette.neutral600,
   flex: 1,
 }
 
@@ -537,7 +392,7 @@ const $unreadMessageText: TextStyle = {
 }
 
 const $mutedText: TextStyle = {
-  color: colors.dim,
+  color: colors.palette.neutral600,
   opacity: 0.6,
 }
 
@@ -551,7 +406,7 @@ const $rightContainer: ViewStyle = {
 
 const $timestamp: TextStyle = {
   fontSize: 12,
-  color: colors.dim,
+  color: colors.palette.neutral600,
   marginBottom: spacing.xs,
 }
 
@@ -571,7 +426,7 @@ const $unreadBadge: ViewStyle = {
 }
 
 const $mutedBadge: ViewStyle = {
-  backgroundColor: colors.dim,
+  backgroundColor: colors.palette.neutral600,
   opacity: 0.6,
 }
 
