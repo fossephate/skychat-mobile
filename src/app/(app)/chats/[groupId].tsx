@@ -7,6 +7,8 @@ import { useLocalSearchParams } from "expo-router"
 import { Message } from "src/components/Convo/MessageItem"
 import { MessageInput } from "src/components/Chat/MessageInput"
 import * as ImagePicker from "expo-image-picker"
+import { translate } from "@/i18n"
+import { ChatHeader } from "@/components/Chat/ChatHeader"
 
 const mockMessages = [
   {
@@ -42,13 +44,14 @@ export default observer(function ChatScreen() {
       contentContainerStyle={$screenContentContainer}
       safeAreaEdges={["top", "bottom"]}
     >
+      <ChatHeader title={translate("chatScreen:title", { name: groupId })} />
       <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={$keyboardAvoidingView}
       >
-        <View style={$headerContainer}>
+        {/* <View style={$headerContainer}>
           <Text preset="heading" tx="chatScreen:title" txOptions={{ name: groupId }} />
-        </View>
+        </View> */}
 
         <FlatList
           data={mockMessages.reverse()}
