@@ -85,7 +85,7 @@ export const createRouter = (ctx: AppContext) => {
         ctx.logger.error({ err }, 'oauth callback failed')
         return res.redirect('/?error')
       }
-      return res.redirect('/')
+      return res.redirect('skychat://')
     })
   )
 
