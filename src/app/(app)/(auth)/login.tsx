@@ -1,26 +1,56 @@
-import { TextInput, ViewStyle, TextStyle } from "react-native"
+import { TextInput, ViewStyle, TextStyle, Linking } from "react-native"
 import { Button, Screen, Text, TextField } from "src/components"
 import { router } from "expo-router"
 import { observer } from "mobx-react-lite"
 import { useStores } from "src/models"
 import { colors, spacing } from "src/theme"
-import { useLoginWithEmail } from '@privy-io/expo'
 import { useEffect, useRef, useState } from 'react'
 import { openAuthSessionAsync } from 'expo-web-browser'
 
-import ReactNativeOAuthClient  from '@aquareum/atproto-oauth-client-react-native';
 
 export default observer(function Login(_props) {
   const [code, setCode] = useState('')
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
 
-  const { state, sendCode, loginWithCode } = useLoginWithEmail({
-    onLoginSuccess(user, isNewUser) {
-      router.replace("/")
-    },
-  })
-  const codeInput = useRef<TextInput>(null)
+
+  // Set up deep link handling when component mounts
+  useEffect(() => {
+    // Handle deep link when app is already open
+    const subscription = Linking.addEventListener('url', handleDeepLink);
+
+    // Handle deep link when app is opened from background
+    Linking.getInitialURL().then(url => {
+      if (url) {
+        handleDeepLink({ url });
+      }
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  const handleDeepLink = async (event: { url: string }) => {
+    console.log("handleDeepLink", event)
+    if (!event.url) return;
+    // Parse the URL - assuming format like skychat://callback?someData=value
+    const url = new URL(event.url);
+    const path = url.pathname;
+    const queryParams = Object.fromEntries(url.searchParams);
+
+    console.log('Received deep link path:', path);
+    console.log('Query params:', queryParams);
+
+    // Handle the data based on your needs
+    if (path === 'callback') {
+      // Handle successful login
+      // You might have session data in queryParams
+    } else if (path === 'error') {
+      // Handle error case
+      setError('Login failed');
+    }
+  };
 
   const handleLogin = async () => {
     console.log("input", username)
@@ -32,18 +62,20 @@ export default observer(function Login(_props) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ handle: username }),
     });
-    // console.log("Response1:", res);
 
     let oauthUrl = handleRes.url;
 
     if (oauthUrl === loginUrl) {
       setError("Handle not found")
+      setTimeout(() => {
+        setError("")
+      }, 3000)
       return;
     }
 
     const authRes = await openAuthSessionAsync(oauthUrl)
 
-    ReactNativeOAuthClient.
+    console.log("authRes", authRes)
 
     if (authRes.type === 'success') {
       // const params = new URLSearchParams(authRes.url.split('?')[1])

@@ -4,7 +4,7 @@
   "expo": {
     "name": "skychat-mobile",
     "slug": "skychat-mobile",
-    "scheme": "skychat-mobile",
+    "scheme": "skychat",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -46,7 +46,13 @@
           "backgroundColor": "#191015"
         }
       ],
-      "expo-router"
+      "expo-router",
+      [
+        "expo-sqlite",
+        {
+          "useSQLCipher": true
+        }
+      ]
     ],
     "experiments": {
       "tsconfigPaths": true,

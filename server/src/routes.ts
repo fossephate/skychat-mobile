@@ -83,7 +83,7 @@ export const createRouter = (ctx: AppContext) => {
         await clientSession.save()
       } catch (err) {
         ctx.logger.error({ err }, 'oauth callback failed')
-        return res.redirect('/?error')
+        return res.redirect('skychat://?error')
       }
       return res.redirect('skychat://')
     })
