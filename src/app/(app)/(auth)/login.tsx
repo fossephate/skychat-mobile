@@ -10,7 +10,7 @@ import { openAuthSessionAsync } from 'expo-web-browser'
 
 export default observer(function Login(_props) {
   const [code, setCode] = useState('')
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const { state, sendCode, loginWithCode } = useLoginWithEmail({
     onLoginSuccess(user, isNewUser) {
       router.replace("/")
@@ -18,8 +18,17 @@ export default observer(function Login(_props) {
   })
   const codeInput = useRef<TextInput>(null)
 
-  const handleSendCode = async () => {
-    console.log("input", email)
+  const handleLogin = async () => {
+    console.log("input", username)
+
+    // POST /login with our username:
+    let res = await fetch("http://127.0.0.1:8080/login", {
+      method: "POST",
+      body: JSON.stringify({ handle: username }),
+    });
+    console.log("Response:");
+    console.log("Response:", await res.json())
+
     // console.log("Sending code to email:", email)
     // let res = await sendCode({ email })
     // console.log("Response:", res)
@@ -54,25 +63,25 @@ export default observer(function Login(_props) {
       />
 
       <TextField
-        value={email}
-        onChangeText={setEmail}
+        value={username}
+        onChangeText={setUsername}
         containerStyle={$textField}
         autoCapitalize="none"
-        autoComplete="email"
+        autoComplete="username"
         autoCorrect={false}
-        keyboardType="email-address"
-        labelTx="loginScreen:emailFieldLabel"
-        placeholderTx="loginScreen:emailFieldPlaceholder"
-        onSubmitEditing={handleSendCode}
+        keyboardType="default"
+        labelTx="loginScreen:usernameFieldLabel"
+        placeholderTx="loginScreen:usernameFieldPlaceholder"
+        onSubmitEditing={handleLogin}
       />
 
       <Button
         testID="send-code-button"
-        tx="loginScreen:sendCode"
+        tx="loginScreen:login"
         style={$tapButton}
         preset="reversed"
         disabled={state.status === 'sending-code'}
-        onPress={handleSendCode}
+        onPress={handleLogin}
       />
 
       {/* {state.status === 'sending-code' && (
