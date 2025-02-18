@@ -28,6 +28,7 @@
     "prebuild:clean": "npx expo prebuild --clean"
   },
   "dependencies": {
+    "@aquareum/atproto-oauth-client-react-native": "^0.0.1",
     "@atproto/api": "^0.13.35",
     "@ethersproject/shims": "^5.7.0",
     "@expo-google-fonts/space-grotesk": "^0.2.2",

@@ -8,9 +8,13 @@ import { useLoginWithEmail } from '@privy-io/expo'
 import { useEffect, useRef, useState } from 'react'
 import { openAuthSessionAsync } from 'expo-web-browser'
 
+import ReactNativeOAuthClient  from '@aquareum/atproto-oauth-client-react-native';
+
 export default observer(function Login(_props) {
   const [code, setCode] = useState('')
-  const [username, setUsername] = useState('')
+  const [username, setUsername] = useState('');
+  const [error, setError] = useState('');
+
   const { state, sendCode, loginWithCode } = useLoginWithEmail({
     onLoginSuccess(user, isNewUser) {
       router.replace("/")
@@ -22,17 +26,31 @@ export default observer(function Login(_props) {
     console.log("input", username)
 
     // POST /login with our username:
-    let res = await fetch("http://127.0.0.1:8080/login", {
+    let loginUrl = "https://skychat.fosse.co/login";
+    let handleRes = await fetch(loginUrl, {
       method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ handle: username }),
     });
-    console.log("Response:");
-    console.log("Response:", await res.json())
+    // console.log("Response1:", res);
 
-    // console.log("Sending code to email:", email)
-    // let res = await sendCode({ email })
-    // console.log("Response:", res)
-    // codeInput.current?.focus()
+    let oauthUrl = handleRes.url;
+
+    if (oauthUrl === loginUrl) {
+      setError("Handle not found")
+      return;
+    }
+
+    const authRes = await openAuthSessionAsync(oauthUrl)
+
+    ReactNativeOAuthClient.
+
+    if (authRes.type === 'success') {
+      // const params = new URLSearchParams(authRes.url.split('?')[1])
+      // // const { session, state } = await oauthClient.callback(params)
+      // // console.log(`logged in as ${session.sub}`)
+      // console.log(params);
+    }
   }
 
   useEffect(() => {
@@ -77,19 +95,21 @@ export default observer(function Login(_props) {
 
       <Button
         testID="send-code-button"
-        tx="loginScreen:login"
+        tx="loginScreen:loginButton"
         style={$tapButton}
         preset="reversed"
         disabled={state.status === 'sending-code'}
         onPress={handleLogin}
       />
 
-      {/* {state.status === 'sending-code' && (
+      {error && (
         <Text
-          tx="loginScreen:sendingCode"
+          tx="loginScreen:handleNotFound"
           style={$hint}
         />
-      )} */}
+      )}
+
+
 
 
       {/* {state.status === 'awaiting-code-input' && (

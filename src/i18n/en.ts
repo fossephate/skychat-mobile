@@ -11,9 +11,8 @@ const en = {
     settingsTab: "Settings",
   },
   welcomeScreen: {
-    postscript:
-      "psst  — This probably isn't what your app looks like. (Unless your designer handed you these screens, and in that case, ship it!)",
-    readyForLaunch: "Your app, almost ready for launch!",
+    readyForLaunch: "Welcome to SkyChat!",
+    postscript: "Message your friends online securely using MLS!",
     exciting: "(ohh, this is exciting!)",
     letsGo: "Let's go!",
   },
@@ -38,13 +37,17 @@ const en = {
   loginScreen: {
     logIn: "Log In",
     enterDetails:
-      "Enter your details below to unlock top secret info. You'll never guess what we've got waiting. Or maybe you will; it's not rocket science here.",
+      "Enter your handle to log in with Bluesky.",
     emailFieldLabel: "Email",
     passwordFieldLabel: "Password",
     emailFieldPlaceholder: "Enter your email address",
     passwordFieldPlaceholder: "Super secret password here",
     tapToLogIn: "Tap to log in!",
     hint: "Hint: you can use any email address and your favorite password :)",
+    handleNotFound: "Handle not found",
+    usernameFieldLabel: "Handle",
+    usernameFieldPlaceholder: "Enter your handle (e.g. alice.bsky.social)",
+    loginButton: "Log In",
   },
   demoNavigator: {
     componentsTab: "Components",
