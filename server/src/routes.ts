@@ -83,11 +83,20 @@ export const createRouter = (ctx: AppContext) => {
         await clientSession.save()
       } catch (err) {
         ctx.logger.error({ err }, 'oauth callback failed')
-        return res.redirect('skychat://?error')
+        // return res.redirect('skychat://?error')
+        if (err == 'session already exists') {
+          return res.redirect('skychat://')
+        }
+        return res.redirect(`skychat://error?error=${err}`)
       }
-      return res.redirect('skychat://')
+      return res.redirect('skychat://success')
     })
   )
+
+  router.get('/profile_info', handler(async (req, res) => {
+    const agent = await getSessionAgent(req, res, ctx)
+    return res.json(agent)
+  }))
 
   // Login page
   router.get(

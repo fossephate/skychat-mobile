@@ -16,8 +16,10 @@ export default observer(function Login(_props) {
 
   // Set up deep link handling when component mounts
   useEffect(() => {
-    // Handle deep link when app is already open
-    const subscription = Linking.addEventListener('url', handleDeepLink);
+    // Handle deep links before navigation occurs
+    const subscription = Linking.addEventListener('url', (event) => {
+      handleDeepLink(event);
+    });
 
     // Handle deep link when app is opened from background
     Linking.getInitialURL().then(url => {
@@ -42,14 +44,16 @@ export default observer(function Login(_props) {
     console.log('Received deep link path:', path);
     console.log('Query params:', queryParams);
 
-    // Handle the data based on your needs
-    if (path === 'callback') {
-      // Handle successful login
-      // You might have session data in queryParams
-    } else if (path === 'error') {
-      // Handle error case
-      setError('Login failed');
-    }
+    // // Handle the data based on your needs
+    // if (path === 'callback') {
+    //   // Handle successful login
+    //   // You might have session data in queryParams
+    // } else if (path === 'error') {
+    //   // Handle error case
+    //   setError('Login failed');
+    // }
+
+    router.replace('/chats');
   };
 
   const handleLogin = async () => {
@@ -84,15 +88,6 @@ export default observer(function Login(_props) {
       // console.log(params);
     }
   }
-
-  useEffect(() => {
-    console.log("Login screen mounted")
-    console.log("state", state)
-
-    if (state.status === 'done') {
-      router.replace("/chats")
-    }
-  }, [state])
 
   return (
     <Screen
@@ -130,48 +125,12 @@ export default observer(function Login(_props) {
         tx="loginScreen:loginButton"
         style={$tapButton}
         preset="reversed"
-        disabled={state.status === 'sending-code'}
         onPress={handleLogin}
       />
 
       {error && (
         <Text
           tx="loginScreen:handleNotFound"
-          style={$hint}
-        />
-      )}
-
-
-
-
-      {/* {state.status === 'awaiting-code-input' && (
-        <>
-          <TextField
-            ref={codeInput}
-            value={code}
-            onChangeText={setCode}
-            containerStyle={$textField}
-            autoCapitalize="none"
-            autoCorrect={false}
-            labelTx="loginScreen:codeFieldLabel"
-            placeholderTx="loginScreen:codeFieldPlaceholder"
-            onSubmitEditing={() => loginWithCode({ code })}
-          />
-
-          <Button
-            testID="login-button"
-            tx="loginScreen:tapToLogIn"
-            style={$tapButton}
-            preset="reversed"
-            disabled={state.status !== 'awaiting-code-input'}
-            onPress={() => loginWithCode({ code })}
-          />
-        </>
-      )} */}
-
-      {state.status === 'submitting-code' && (
-        <Text
-          tx="loginScreen:loggingIn"
           style={$hint}
         />
       )}
