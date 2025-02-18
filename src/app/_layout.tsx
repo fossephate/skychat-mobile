@@ -2,6 +2,12 @@
 import React from "react"
 import { Slot, SplashScreen } from "expo-router"
 import { useInitialRootStore } from "src/models"
+import { PrivyProvider } from '@privy-io/expo';
+// import app id and client id from .env
+// const PRIVY_APP_ID = process.env.PRIVY_APP_ID;
+// const PRIVY_APP_CLIENT_ID = process.env.PRIVY_APP_CLIENT_ID;
+const PRIVY_APP_ID = "cm79od4vc01jm12i1iwdgzfa5"
+const PRIVY_APP_CLIENT_ID = "client-WY5gyNCEn9UM3D1Pxu1qLoDDLLyHTvMN1Fdft7hQkJenQ"
 
 SplashScreen.preventAutoHideAsync()
 
@@ -20,6 +26,15 @@ export default function Root() {
   if (!rehydrated) {
     return null
   }
+
+  // return (
+  //   <PrivyProvider
+  //     appId={PRIVY_APP_ID!}
+  //     clientId={PRIVY_APP_CLIENT_ID!}
+  //   >
+  //     <Slot />
+  //   </PrivyProvider>
+  // )
 
   return <Slot />
 }

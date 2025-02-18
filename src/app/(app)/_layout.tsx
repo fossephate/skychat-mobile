@@ -43,10 +43,20 @@ export default observer(function Layout() {
     return null
   }
 
-
-  if (!isAuthenticated) {
+  // if (!isAuthenticated) {
     return <Redirect href="/login" />
-  }
+  // }
+
+  // return (
+  //   <PrivyProvider
+  //     appId={PRIVY_APP_ID!}
+  //     clientId={PRIVY_APP_CLIENT_ID!}
+  //   >
+  //     <Stack />
+  //   </PrivyProvider>
+  // );
+
+
 
   return <Stack screenOptions={{ headerShown: false }} />
 })
