@@ -52,6 +52,13 @@ export default function Root() {
     if (fontError) throw fontError
   }, [fontError])
 
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync()
+      router.replace("/welcome")
+    }
+  }, [loaded])
+
   if (!loaded) {
     return null
   }
@@ -59,21 +66,21 @@ export default function Root() {
 
   // if (isReady) {
   //   if (!user) {
-  //     router.replace("/welcome")
+      // router.replace("/welcome")
   //   } else {
   //     router.replace("/chats")
   //   }
   // }
 
-  return (
-    <PrivyProvider
-      appId={PRIVY_APP_ID!}
-      clientId={PRIVY_APP_CLIENT_ID!}
-    >
-      <Stack screenOptions={{ headerShown: false }} />
-    </PrivyProvider>
-  )
+  // return (
+  //   <PrivyProvider
+  //     appId={PRIVY_APP_ID!}
+  //     clientId={PRIVY_APP_CLIENT_ID!}
+  //   >
+  //     <Stack screenOptions={{ headerShown: false }} />
+  //   </PrivyProvider>
+  // )
 
   // return <Slot />
-  // return <Stack screenOptions={{ headerShown: true }} />
+  return <Stack screenOptions={{ headerShown: false }} />
 }

@@ -7,21 +7,21 @@ import { customFontsToLoad } from "src/theme"
 import { initI18n } from "@/i18n"
 import { loadDateFnsLocale } from "@/utils/formatDate"
 import { useThemeProvider } from "@/utils/useAppTheme"
-import { usePrivy } from "@privy-io/expo"
 
 export default observer(function Layout() {
-  const { user, isReady } = usePrivy()
 
-  useEffect(() => {
-    if (isReady) {
-      SplashScreen.hideAsync()
-      if (!user) {
-        router.replace("/welcome")
-      } else {
-        router.replace("/chats")
-      }
-    }
-  }, [isReady, user])
+  // useEffect(() => {
+  //   // if (isReady) {
+  //   //   SplashScreen.hideAsync()
+  //   //   if (!user) {
+  //   //     router.replace("/welcome")
+  //   //   } else {
+  //   //     router.replace("/chats")
+  //   //   }
+  //   // }
+  //   SplashScreen.hideAsync()
+  //   router.replace("/welcome")
+  // }, [])
 
   return <Stack screenOptions={{ headerShown: false }} />
 })
