@@ -36,7 +36,10 @@
   "extends": "expo/tsconfig.base",
   "ts-node": {
     "compilerOptions": {
-      "module": "commonjs"
+      "module": "commonjs",
+      "paths": {
+        "@skychat-lib/*": ["../../../skychat-lib/*"]
+      }
     }
   },
   "include": [

@@ -9,6 +9,7 @@ import { MessageInput } from "src/components/Chat/MessageInput"
 import * as ImagePicker from "expo-image-picker"
 import { translate } from "@/i18n"
 import { ChatHeader } from "@/components/Chat/ChatHeader"
+import { useConvo } from "@/utils/useConvo"
 
 const mockMessages = [
   {
@@ -33,9 +34,13 @@ const mockMessages = [
 
 export default observer(function ChatScreen() {
   const { groupId } = useLocalSearchParams()
+  const { sendMessage } = useConvo()
 
-  const handleSendMessage = (text: string, attachments?: ImagePicker.ImagePickerAsset[]) => {
-    console.log("Sending message:", text, attachments)
+  const handleSendMessage = async (text: string) => {
+    // groupId is just the route name, i.e. /chats/123 -> groupId = "123"
+    // get the groupId from the route name
+    const groupId = useLocalSearchParams().groupId
+    await sendMessage(groupId, text)
   }
 
   return (
