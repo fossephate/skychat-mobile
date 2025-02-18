@@ -2,6 +2,7 @@ import React from "react"
 import { View, ViewStyle, TextStyle, ScrollView, Image, ImageStyle, Switch } from "react-native"
 import { Screen, Text, ListItem } from "src/components"
 import { colors, spacing } from "src/theme"
+import { usePrivy } from "@privy-io/expo";
 
 export default function SettingsScreen() {
   const userProfile = {
@@ -14,6 +15,7 @@ export default function SettingsScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true)
   const [darkMode, setDarkMode] = React.useState(false)
   const [autoplay, setAutoplay] = React.useState(true)
+  const { logout } = usePrivy();
 
   const renderSwitch = (value: boolean, onValueChange: (value: boolean) => void) => (
     <Switch
@@ -166,6 +168,7 @@ export default function SettingsScreen() {
             leftIcon="logOut"
             style={[$listItem, $destructiveItem]}
             textStyle={$destructiveText}
+            onPress={logout}
           />
         </View>
 
