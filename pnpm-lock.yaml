@@ -28,7 +28,7 @@ importers:
         version: 0.3.2(@fortawesome/fontawesome-svg-core@6.7.2)(react-native-svg@15.11.1(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))
       '@privy-io/expo':
         specifier: ^0.47.0
-        version: 0.47.0(61e5a82d852549808d5cb01cb5e383a8)
+        version: 0.47.0(kcilttyg6tei7jgzkwadwtim2u)
       '@privy-io/expo-native-extensions':
         specifier: ^0.0.3
         version: 0.0.3(expo@52.0.32(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@expo/metro-runtime@4.0.1(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1)))(react-native-webview@13.12.5(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
@@ -59,6 +59,9 @@ importers:
       expo-build-properties:
         specifier: ~0.13.1
         version: 0.13.2(expo@52.0.32(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@expo/metro-runtime@4.0.1(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1)))(react-native-webview@13.12.5(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))
+      expo-clipboard:
+        specifier: ~7.0.1
+        version: 7.0.1(expo@52.0.32(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@expo/metro-runtime@4.0.1(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1)))(react-native-webview@13.12.5(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
       expo-constants:
         specifier: ~17.0.6
         version: 17.0.6(expo@52.0.32(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@expo/metro-runtime@4.0.1(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1)))(react-native-webview@13.12.5(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))
@@ -79,7 +82,7 @@ importers:
         version: 16.0.1(expo@52.0.32(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@expo/metro-runtime@4.0.1(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1)))(react-native-webview@13.12.5(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react@18.3.1)
       expo-router:
         specifier: ~4.0.17
-        version: 4.0.17(a5ea3e2ec4061de9704c300b36030063)
+        version: 4.0.17(pdftosaety7d4trvw4kbrrzeda)
       expo-secure-store:
         specifier: ~14.0.1
         version: 14.0.1(expo@52.0.32(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@expo/metro-runtime@4.0.1(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1)))(react-native-webview@13.12.5(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))
@@ -7890,7 +7893,7 @@ snapshots:
       react: 18.3.1
       react-native: 0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1)
 
-  '@privy-io/expo@0.47.0(61e5a82d852549808d5cb01cb5e383a8)':
+  '@privy-io/expo@0.47.0(kcilttyg6tei7jgzkwadwtim2u)':
     dependencies:
       '@privy-io/expo-native-extensions': 0.0.3(expo@52.0.32(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@expo/metro-runtime@4.0.1(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1)))(react-native-webview@13.12.5(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1))(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))(react@18.3.1)
       '@privy-io/js-sdk-core': 0.44.0(typescript@5.3.3)(viem@2.23.2(typescript@5.3.3)(zod@3.24.1))
@@ -9693,7 +9696,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1):
+  eslint-module-utils@2.12.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1))(eslint@8.57.1):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -9724,7 +9727,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0)(eslint@8.57.1)
+      eslint-module-utils: 2.12.0(@typescript-eslint/parser@8.24.0(eslint@8.57.1)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.7.0(eslint-plugin-import@2.31.0)(eslint@8.57.1))(eslint@8.57.1)
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -10014,7 +10017,7 @@ snapshots:
     dependencies:
       invariant: 2.2.4
 
-  expo-router@4.0.17(a5ea3e2ec4061de9704c300b36030063):
+  expo-router@4.0.17(pdftosaety7d4trvw4kbrrzeda):
     dependencies:
       '@expo/metro-runtime': 4.0.1(react-native@0.76.7(@babel/core@7.26.8)(@babel/preset-env@7.26.8(@babel/core@7.26.8))(@types/react@18.3.18)(react@18.3.1))
       '@expo/server': 0.5.1(typescript@5.3.3)

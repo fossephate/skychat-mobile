@@ -3,6 +3,8 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { withSetPropAction } from "./helpers/withSetPropAction"
 import { ConvoClient } from "../../../skychat-lib/src/client";
 
+import { Agent } from '@atproto/api'
+
 export const MessageModel = types.model("Message").props({
   text: types.string,
   senderId: types.string,
@@ -60,7 +62,7 @@ export const ConvoStoreModel = types
     },
 
     async getGroups() {
-      return await store.client?.getGroups()
+      // return await store.client?.getGroups()
     }
 
     // Add more actions as needed

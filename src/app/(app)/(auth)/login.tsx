@@ -6,6 +6,7 @@ import { useStores } from "src/models"
 import { colors, spacing } from "src/theme"
 import { useLoginWithEmail } from '@privy-io/expo'
 import { useEffect, useRef, useState } from 'react'
+import { openAuthSessionAsync } from 'expo-web-browser'
 
 export default observer(function Login(_props) {
   const [code, setCode] = useState('')
@@ -18,10 +19,11 @@ export default observer(function Login(_props) {
   const codeInput = useRef<TextInput>(null)
 
   const handleSendCode = async () => {
-    console.log("Sending code to email:", email)
-    let res = await sendCode({ email })
-    console.log("Response:", res)
-    codeInput.current?.focus()
+    console.log("input", email)
+    // console.log("Sending code to email:", email)
+    // let res = await sendCode({ email })
+    // console.log("Response:", res)
+    // codeInput.current?.focus()
   }
 
   useEffect(() => {
@@ -51,40 +53,37 @@ export default observer(function Login(_props) {
         style={$enterDetails}
       />
 
-      {state.status !== 'awaiting-code-input' && (
-        <>
-          <TextField
-            value={email}
-            onChangeText={setEmail}
-            containerStyle={$textField}
-            autoCapitalize="none"
-            autoComplete="email"
-            autoCorrect={false}
-            keyboardType="email-address"
-            labelTx="loginScreen:emailFieldLabel"
-            placeholderTx="loginScreen:emailFieldPlaceholder"
-            onSubmitEditing={handleSendCode}
-          />
+      <TextField
+        value={email}
+        onChangeText={setEmail}
+        containerStyle={$textField}
+        autoCapitalize="none"
+        autoComplete="email"
+        autoCorrect={false}
+        keyboardType="email-address"
+        labelTx="loginScreen:emailFieldLabel"
+        placeholderTx="loginScreen:emailFieldPlaceholder"
+        onSubmitEditing={handleSendCode}
+      />
 
-          <Button
-            testID="send-code-button"
-            tx="loginScreen:sendCode"
-            style={$tapButton}
-            preset="reversed"
-            disabled={state.status === 'sending-code'}
-            onPress={handleSendCode}
-          />
+      <Button
+        testID="send-code-button"
+        tx="loginScreen:sendCode"
+        style={$tapButton}
+        preset="reversed"
+        disabled={state.status === 'sending-code'}
+        onPress={handleSendCode}
+      />
 
-          {state.status === 'sending-code' && (
-            <Text
-              tx="loginScreen:sendingCode"
-              style={$hint}
-            />
-          )}
-        </>
-      )}
+      {/* {state.status === 'sending-code' && (
+        <Text
+          tx="loginScreen:sendingCode"
+          style={$hint}
+        />
+      )} */}
 
-      {state.status === 'awaiting-code-input' && (
+
+      {/* {state.status === 'awaiting-code-input' && (
         <>
           <TextField
             ref={codeInput}
@@ -107,7 +106,7 @@ export default observer(function Login(_props) {
             onPress={() => loginWithCode({ code })}
           />
         </>
-      )}
+      )} */}
 
       {state.status === 'submitting-code' && (
         <Text
