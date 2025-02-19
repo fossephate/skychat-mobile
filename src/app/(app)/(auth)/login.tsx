@@ -114,7 +114,6 @@ export default observer(function Login(_props) {
       console.log("oauthUrl", oauthUrl)
 
       const authRes = await openAuthSessionAsync(oauthUrl.toString())
-      console.log("authRes", authRes)
     } catch (err) {
       console.error("Login error:", err)
       setError("Login failed")
