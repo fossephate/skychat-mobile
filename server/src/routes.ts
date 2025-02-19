@@ -85,16 +85,11 @@ export const createRouter = (ctx: AppContext) => {
         ctx.logger.error({ err }, 'oauth callback failed')
         // add the params in the redirect:
         if (err == 'session already exists') {
-          return res.redirect(`skychat://exists?${params.toString()}`)
-        }
-        if (err.toString().includes('Unknown authorization')) {
-          // get the string in quotes
-          const errorMessage = err.toString().match(/"([^"]+)"/)[1]
-          params.set('session', errorMessage)
+          return res.redirect(`skychat://?exists=true&${params.toString()}`)
         }
         return res.redirect(`skychat://?error=${err}&${params.toString()}`)
       }
-      return res.redirect(`skychat://success?${params.toString()}`)
+      return res.redirect(`skychat://?success=true&${params.toString()}`)
     })
   )
 
