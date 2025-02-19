@@ -93,23 +93,23 @@ export default observer(function Login(_props) {
         "client_uri": "https://skychat.fosse.co",
         "dpop_bound_access_tokens": true,
       },
-      handleResolver: 'https://bsky.social'
+      handleResolver: 'https://bsky.social',
+      // fetch: fetch,
+      // allowHttp: true,
+      // responseMode: 'query',
+      // plcDirectoryUrl: 'https://plc.directory/v1/directory.json'
     });
 
-    // console.log("Crypto", QuickCrypto)
-    // console.log(QuickCrypto.randomBytes(32).toString('hex'))
+    console.log("test");
 
-    console.log("clientId", clientId)
+    // let res = await oauthClient.init();
+    // console.log("res", res)
 
     // let oauthClient = await ReactNativeOAuthClient.load({ clientId: clientId, handleResolver: 'https://bsky.social' });
-    console.log("oauthClient", oauthClient)
-
-    let loginUrl2 = await oauthClient.authorize(username);
-    console.log("loginUrl2", loginUrl2)
-
+    let oauthUrl = await oauthClient.authorize(username);
+    console.log("oauthUrl", oauthUrl)
 
     // let oauthUrl = handleRes.url;
-
     // if (oauthUrl === loginUrl) {
     //   setError("Handle not found")
     //   setTimeout(() => {
@@ -118,10 +118,9 @@ export default observer(function Login(_props) {
     //   return;
     // }
 
-    // const authRes = await openAuthSessionAsync(oauthUrl)
+    const authRes = await openAuthSessionAsync(oauthUrl.toString())
 
-    // console.log("authRes", authRes)
-
+    console.log("authRes", authRes)
     // if (authRes.type === 'success') {
     //   // const params = new URLSearchParams(authRes.url.split('?')[1])
     //   // // const { session, state } = await oauthClient.callback(params)

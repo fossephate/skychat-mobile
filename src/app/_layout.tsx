@@ -8,13 +8,7 @@ import { customFontsToLoad } from "@/theme";
 import { loadDateFnsLocale } from "@/utils/formatDate";
 import { useThemeProvider } from "@/utils/useAppTheme";
 import { useFonts } from "expo-font";
-
-
-// import app id and client id from .env
-// const PRIVY_APP_ID = process.env.PRIVY_APP_ID;
-// const PRIVY_APP_CLIENT_ID = process.env.PRIVY_APP_CLIENT_ID;
-const PRIVY_APP_ID = "cm79od4vc01jm12i1iwdgzfa5"
-const PRIVY_APP_CLIENT_ID = "client-WY5gyNCEn9UM3D1Pxu1qLoDDLLyHTvMN1Fdft7hQkJenQ"
+import { OAuthSession, ReactNativeOAuthClient } from "@aquareum/atproto-oauth-client-react-native"
 
 SplashScreen.preventAutoHideAsync()
 
@@ -53,10 +47,54 @@ export default function Root() {
   }, [fontError])
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync()
-      router.replace("/welcome")
-    }
+    (async () => {
+      if (loaded) {
+        SplashScreen.hideAsync()
+        // router.replace("/welcome")
+
+        let client = new ReactNativeOAuthClient({
+          clientMetadata: {
+            "redirect_uris": [
+              "https://skychat.fosse.co/oauth/callback"
+            ],
+            "response_types": [
+              "code"
+            ],
+            "grant_types": [
+              "authorization_code",
+              "refresh_token"
+            ],
+            "scope": "atproto transition:generic",
+            "token_endpoint_auth_method": "none",
+            "application_type": "web",
+            "client_id": "https://skychat.fosse.co/client-metadata.json",
+            "client_name": "AT Protocol Express App",
+            "client_uri": "https://skychat.fosse.co",
+            "dpop_bound_access_tokens": true,
+          },
+          handleResolver: 'https://bsky.social'
+        });
+
+        console.log("initializing client");
+
+        const result: undefined | { session: OAuthSession; state: string | null } | { session: OAuthSession; } = await client.init();
+        console.log("client init results:", result);
+        if (result) {
+          const { session } = result
+          if ('state' in result && result.state != null) {
+            console.log(
+              `${session.sub} was successfully authenticated (state: ${result.state})`,
+            )
+          } else {
+            console.log(`${session.sub} was restored (last active session)`)
+          }
+          router.replace("/chats")
+        } else {
+          // console.log("no result")
+          router.replace("/welcome")
+        }
+      }
+    })()
   }, [loaded])
 
   if (!loaded) {
@@ -66,7 +104,7 @@ export default function Root() {
 
   // if (isReady) {
   //   if (!user) {
-      // router.replace("/welcome")
+  // router.replace("/welcome")
   //   } else {
   //     router.replace("/chats")
   //   }
