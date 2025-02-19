@@ -92,7 +92,7 @@ export const createRouter = (ctx: AppContext) => {
           const errorMessage = err.toString().match(/"([^"]+)"/)[1]
           params.set('session', errorMessage)
         }
-        return res.redirect(`skychat://error?error=${err}&${params.toString()}`)
+        return res.redirect(`skychat://?error=${err}&${params.toString()}`)
       }
       return res.redirect(`skychat://success?${params.toString()}`)
     })

@@ -42,32 +42,66 @@ export default observer(function Login(_props) {
     const queryParams = Object.fromEntries(url.searchParams);
     const client = authenticationStore.client
 
-    if (!client) {
-      // don't redirect if client is not initialized:
-      router.replace("/login");
-      return;
-    }
+    // if (!client) {
+    //   // don't redirect if client is not initialized:
+    //   router.replace("/login");
+    //   return;
+    // }
 
-    console.log('Received deep link path:', path);
-    console.log('Query params:', queryParams);
+    // console.log('Received deep link path:', path);
+    // console.log('Query params:', queryParams);
 
-    console.log("queryParams['session']", !!queryParams['session'])
-    console.log("queryParams['state']", !!queryParams['state'])
-    if (!!queryParams['session'] && !!queryParams['state']) {
-      console.log("GOT SESSION AND STATE");
-      const { session, state } = await client.callback(url.searchParams);
+    // if (queryParams.code && queryParams.state && queryParams.iss) {
+    //   console.log("GOT CODE, STATE, AND ISS");
 
-      console.log("session", session)
-      console.log("state", state)
-      console.log(`logged in as ${session.sub}`)
+    //   // prevent any redirect from happening with expo router:
 
-      router.replace("/chats")
-    }
+
+
+    //   // const { session, state } = await client.callback(test);
+
+    //   // client.callback(test).then(res => {
+    //   //   console.log("res", res)
+    //   // })
+
+    //   console.log("code", queryParams.code)
+    //   console.log("state", queryParams.state)
+    //   // console.log(`logged in as ${session.sub}`)
+
+    //   // const redirectParams = `/?session=${queryParams.session}&state=${queryParams.state}`
+    //   // console.log("redirectParams", redirectParams)
+
+    //   // let queryParams2 =
+    //   //   { "code": "cod-76113ba554588631b6e23079031e46e022b96a0ec4f6eae14cb597342260f877", "error": "Error: Unknown authorization session \"EzbDnn3OX-g8PF-IBk2EbA\"", "iss": "https://bsky.social", "state": "EzbDnn3OX-g8PF-IBk2EbA" };
+    //   setTimeout(() => {
+    //     console.log("queryParams", queryParams)
+    //     router.replace({
+    //       pathname: '/',
+    //       params: {
+    //         code: queryParams.code,
+    //         state: queryParams.state,
+    //         iss: queryParams.iss
+    //       }
+    //     });
+    //   }, 1000)
+    // }
   };
 
   const handleLogin = async () => {
     console.log("input", username)
     const client = authenticationStore.client
+
+
+    // let queryParams2 =
+    //   { "code": "cod-76113ba554588631b6e23079031e46e022b96a0ec4f6eae14cb597342260f877", "error": "Error: Unknown authorization session \"EzbDnn3OX-g8PF-IBk2EbA\"", "iss": "https://bsky.social", "state": "EzbDnn3OX-g8PF-IBk2EbA" };
+    // router.push({
+    //   pathname: '/',
+    //   params: {
+    //     code: queryParams2.code,
+    //     state: queryParams2.state,
+    //     iss: queryParams2.iss
+    //   }
+    // });
 
     if (!client) {
       setError("Client not initialized")
@@ -78,7 +112,7 @@ export default observer(function Login(_props) {
     try {
       let oauthUrl = await client.authorize(username);
       console.log("oauthUrl", oauthUrl)
-      
+
       const authRes = await openAuthSessionAsync(oauthUrl.toString())
       console.log("authRes", authRes)
     } catch (err) {
