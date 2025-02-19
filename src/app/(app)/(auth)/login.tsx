@@ -1,107 +1,91 @@
-import { TextInput, ViewStyle, TextStyle, Linking } from "react-native"
+import { ViewStyle, TextStyle, Linking } from "react-native"
 import { Button, Screen, Text, TextField } from "src/components"
-import { router } from "expo-router"
 import { observer } from "mobx-react-lite"
 import { useStores } from "src/models"
-import { colors, spacing } from "src/theme"
+import { ThemedStyle } from "src/theme"
 import { useEffect, useState } from 'react'
 import { openAuthSessionAsync } from 'expo-web-browser'
-// let Crypto = require('react-native-quick-crypto')
-import QuickCrypto from 'react-native-quick-crypto';
-// import { ReactNativeOAuthClient } from "hacks/atproto-oauth-client-react-native/src"
-import { ReactNativeOAuthClient } from "@aquareum/atproto-oauth-client-react-native"
+import { useAppTheme } from "@/utils/useAppTheme"
 
 
 
-export default observer(function Login(_props) {
+export default observer(function LoginScreen(_props) {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
-  const { authenticationStore } = useStores()
+  const { authenticationStore } = useStores();
+  const { themed } = useAppTheme();
 
-  // Set up deep link handling when component mounts
-  useEffect(() => {
-    const subscription = Linking.addEventListener('url', handleDeepLink);
+  // // Set up deep link handling when component mounts
+  // useEffect(() => {
+  //   const subscription = Linking.addEventListener('url', handleDeepLink);
 
-    // Handle deep link when app is opened from background
-    Linking.getInitialURL().then(url => {
-      if (url) {
-        handleDeepLink({ url });
-      }
-    });
+  //   // Handle deep link when app is opened from background
+  //   Linking.getInitialURL().then(url => {
+  //     if (url) {
+  //       handleDeepLink({ url });
+  //     }
+  //   });
 
-    return () => {
-      subscription.remove();
-    };
-  }, []);
+  //   return () => {
+  //     subscription.remove();
+  //   };
+  // }, []);
 
-  const handleDeepLink = async (event: { url: string }) => {
-    console.log("handleDeepLink", event)
-    if (!event.url) return;
-    const url = new URL(event.url);
-    const path = url.pathname;
-    const queryParams = Object.fromEntries(url.searchParams);
-    const client = authenticationStore.client
+  // const handleDeepLink = async (event: { url: string }) => {
+  //   console.log("handleDeepLink", event)
+  //   if (!event.url) return;
+  //   const url = new URL(event.url);
+  //   const path = url.pathname;
+  //   const queryParams = Object.fromEntries(url.searchParams);
+  //   const client = authenticationStore.client
 
-    // if (!client) {
-    //   // don't redirect if client is not initialized:
-    //   router.replace("/login");
-    //   return;
-    // }
+  //   // if (!client) {
+  //   //   // don't redirect if client is not initialized:
+  //   //   router.replace("/login");
+  //   //   return;
+  //   // }
 
-    // console.log('Received deep link path:', path);
-    // console.log('Query params:', queryParams);
+  //   // console.log('Received deep link path:', path);
+  //   // console.log('Query params:', queryParams);
 
-    // if (queryParams.code && queryParams.state && queryParams.iss) {
-    //   console.log("GOT CODE, STATE, AND ISS");
+  //   // if (queryParams.code && queryParams.state && queryParams.iss) {
+  //   //   console.log("GOT CODE, STATE, AND ISS");
 
-    //   // prevent any redirect from happening with expo router:
+  //   //   // prevent any redirect from happening with expo router:
 
 
 
-    //   // const { session, state } = await client.callback(test);
+  //   //   // const { session, state } = await client.callback(test);
 
-    //   // client.callback(test).then(res => {
-    //   //   console.log("res", res)
-    //   // })
+  //   //   // client.callback(test).then(res => {
+  //   //   //   console.log("res", res)
+  //   //   // })
 
-    //   console.log("code", queryParams.code)
-    //   console.log("state", queryParams.state)
-    //   // console.log(`logged in as ${session.sub}`)
+  //   //   console.log("code", queryParams.code)
+  //   //   console.log("state", queryParams.state)
+  //   //   // console.log(`logged in as ${session.sub}`)
 
-    //   // const redirectParams = `/?session=${queryParams.session}&state=${queryParams.state}`
-    //   // console.log("redirectParams", redirectParams)
+  //   //   // const redirectParams = `/?session=${queryParams.session}&state=${queryParams.state}`
+  //   //   // console.log("redirectParams", redirectParams)
 
-    //   // let queryParams2 =
-    //   //   { "code": "cod-76113ba554588631b6e23079031e46e022b96a0ec4f6eae14cb597342260f877", "error": "Error: Unknown authorization session \"EzbDnn3OX-g8PF-IBk2EbA\"", "iss": "https://bsky.social", "state": "EzbDnn3OX-g8PF-IBk2EbA" };
-    //   setTimeout(() => {
-    //     console.log("queryParams", queryParams)
-    //     router.replace({
-    //       pathname: '/',
-    //       params: {
-    //         code: queryParams.code,
-    //         state: queryParams.state,
-    //         iss: queryParams.iss
-    //       }
-    //     });
-    //   }, 1000)
-    // }
-  };
+  //   //   // let queryParams2 =
+  //   //   //   { "code": "cod-76113ba554588631b6e23079031e46e022b96a0ec4f6eae14cb597342260f877", "error": "Error: Unknown authorization session \"EzbDnn3OX-g8PF-IBk2EbA\"", "iss": "https://bsky.social", "state": "EzbDnn3OX-g8PF-IBk2EbA" };
+  //   //   setTimeout(() => {
+  //   //     console.log("queryParams", queryParams)
+  //   //     router.replace({
+  //   //       pathname: '/',
+  //   //       params: {
+  //   //         code: queryParams.code,
+  //   //         state: queryParams.state,
+  //   //         iss: queryParams.iss
+  //   //       }
+  //   //     });
+  //   //   }, 1000)
+  //   // }
+  // };
 
   const handleLogin = async () => {
-    console.log("input", username)
     const client = authenticationStore.client
-
-
-    // let queryParams2 =
-    //   { "code": "cod-76113ba554588631b6e23079031e46e022b96a0ec4f6eae14cb597342260f877", "error": "Error: Unknown authorization session \"EzbDnn3OX-g8PF-IBk2EbA\"", "iss": "https://bsky.social", "state": "EzbDnn3OX-g8PF-IBk2EbA" };
-    // router.push({
-    //   pathname: '/',
-    //   params: {
-    //     code: queryParams2.code,
-    //     state: queryParams2.state,
-    //     iss: queryParams2.iss
-    //   }
-    // });
 
     if (!client) {
       setError("Client not initialized")
@@ -123,26 +107,26 @@ export default observer(function Login(_props) {
 
   return (
     <Screen
-      contentContainerStyle={$screenContentContainer}
+      contentContainerStyle={themed($screenContentContainer)}
       safeAreaEdges={["top", "bottom"]}
     >
       <Text
         testID="login-heading"
         tx="loginScreen:logIn"
         preset="heading"
-        style={$signIn}
+        style={themed($signIn)}
       />
 
       <Text
         tx="loginScreen:enterDetails"
         preset="subheading"
-        style={$enterDetails}
+        style={themed($enterDetails)}
       />
 
       <TextField
         value={username}
         onChangeText={setUsername}
-        containerStyle={$textField}
+        containerStyle={themed($textField)}
         autoCapitalize="none"
         autoComplete="username"
         autoCorrect={false}
@@ -155,7 +139,7 @@ export default observer(function Login(_props) {
       <Button
         testID="send-code-button"
         tx="loginScreen:loginButton"
-        style={$tapButton}
+        style={themed($tapButton)}
         preset="reversed"
         onPress={handleLogin}
       />
@@ -163,35 +147,35 @@ export default observer(function Login(_props) {
       {error && (
         <Text
           tx="loginScreen:handleNotFound"
-          style={$hint}
+          style={themed($hint)}
         />
       )}
     </Screen>
   )
 })
 
-const $screenContentContainer: ViewStyle = {
+const $screenContentContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingVertical: spacing.xxl,
   paddingHorizontal: spacing.lg,
-}
+})
 
-const $signIn: TextStyle = {
+const $signIn: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.sm,
-}
+})
 
-const $enterDetails: TextStyle = {
+const $enterDetails: ThemedStyle<TextStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
-}
+})
 
-const $hint: TextStyle = {
+const $hint: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   color: colors.tint,
   marginBottom: spacing.md,
-}
+})
 
-const $textField: ViewStyle = {
+const $textField: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
-}
+})
 
-const $tapButton: ViewStyle = {
+const $tapButton: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginTop: spacing.xs,
-}
+})
