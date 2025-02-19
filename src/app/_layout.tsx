@@ -8,7 +8,7 @@ import { customFontsToLoad } from "@/theme";
 import { loadDateFnsLocale } from "@/utils/formatDate";
 import { useThemeProvider } from "@/utils/useAppTheme";
 import { useFonts } from "expo-font";
-import { OAuthSession, ReactNativeOAuthClient } from "@aquareum/atproto-oauth-client-react-native"
+import { OAuthSession, ReactNativeOAuthClient, TokenInvalidError, TokenRefreshError, TokenRevokedError } from "@aquareum/atproto-oauth-client-react-native"
 import { AuthProvider } from '@/contexts/auth'
 
 SplashScreen.preventAutoHideAsync()
@@ -78,6 +78,22 @@ export default function Root() {
 
         const result = await client.init();
         console.log("client init results:", result);
+
+        client.addEventListener(
+          'deleted',
+          (
+            event: CustomEvent<{
+              sub: string
+              cause: TokenRefreshError | TokenRevokedError | TokenInvalidError | unknown
+            }>,
+          ) => {
+            const { sub, cause } = event.detail
+            console.error(`Session for ${sub} is no longer available (cause: ${cause})`)
+            authenticationStore.setDidAuthenticate(false);
+            router.replace("/welcome" as any)
+          },
+        )
+
         if (result) {
           const { session } = result
           if ('state' in result && result.state != null) {
@@ -88,9 +104,10 @@ export default function Root() {
             console.log(`${session.sub} was restored (last active session)`)
           }
           authenticationStore.setDidAuthenticate(true)
+          authenticationStore.setSession(session)
           router.replace("/chats")
         } else {
-          router.replace("/welcome")
+          router.replace("/welcome" as any)
         }
       }
     })()
@@ -100,24 +117,10 @@ export default function Root() {
     return null
   }
 
+  return (
+    <ThemeProvider value={{ themeScheme, setThemeContextOverride }}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </ThemeProvider>
+  );
 
-  // if (isReady) {
-  //   if (!user) {
-  // router.replace("/welcome")
-  //   } else {
-  //     router.replace("/chats")
-  //   }
-  // }
-
-  // return (
-  //   <PrivyProvider
-  //     appId={PRIVY_APP_ID!}
-  //     clientId={PRIVY_APP_CLIENT_ID!}
-  //   >
-  //     <Stack screenOptions={{ headerShown: false }} />
-  //   </PrivyProvider>
-  // )
-
-  // return <Slot />
-  return <Stack screenOptions={{ headerShown: false }} />
 }

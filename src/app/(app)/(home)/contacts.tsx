@@ -1,219 +1,186 @@
-import React, { useState } from "react"
-import { View, ViewStyle, TextStyle, FlatList, Image, ImageStyle, TextInput, TouchableOpacity } from "react-native"
-import { Screen, Text } from "src/components"
-import { colors, spacing } from "src/theme"
+import React, { useState, useEffect } from "react"
+import { View, ViewStyle, TextStyle, Image, ImageStyle, TextInput } from "react-native"
+import { ListView, Screen, Text } from "src/components"
+import { ThemedStyle } from "src/theme"
+import { useStores } from "src/models"
+import { Agent } from '@atproto/api'
+import { useAppTheme } from "src/utils/useAppTheme"
+import { ListItem } from "src/components/ListItem"
 
 interface User {
-  id: string
-  name: string
-  avatar: string
-  status?: string
+  did: string
+  handle: string
+  displayName?: string
+  avatar?: string
+  description?: string
   verified?: boolean
   online?: boolean
 }
 
-const generateUsers = (): User[] => [
-  {
-    id: "elena",
-    name: "Elena Zhang",
-    avatar: "https://i.pravatar.cc/150?u=elena",
-    status: "Building something new 🚀",
-    online: true,
-    verified: true,
-  },
-  {
-    id: "marcus",
-    name: "Marcus Chen",
-    avatar: "https://i.pravatar.cc/150?u=marcus",
-    status: "Designer & Developer",
-    online: true,
-    verified: true,
-  },
-  {
-    id: "sophia",
-    name: "Sophia Patel",
-    avatar: "https://i.pravatar.cc/150?u=sophia",
-    status: "Art Director @Studio",
-    online: false,
-    verified: true,
-  },
-  {
-    id: "lucas",
-    name: "Lucas Kim",
-    avatar: "https://i.pravatar.cc/150?u=lucas",
-    status: "Just exploring 🌎",
-    online: false,
-    verified: true,
-  },
-  {
-    id: "nadia",
-    name: "Nadia Rodriguez",
-    avatar: "https://i.pravatar.cc/150?u=nadia",
-    status: "Product Designer",
-    online: true,
-    verified: true,
-  },
-  {
-    id: "aiden",
-    name: "Aiden Foster",
-    avatar: "https://i.pravatar.cc/150?u=aiden",
-    status: "iOS Developer",
-    online: true,
-    verified: false,
-  },
-  {
-    id: "maya",
-    name: "Maya Singh",
-    avatar: "https://i.pravatar.cc/150?u=maya",
-    status: "UX Researcher",
-    online: false,
-    verified: false,
-  },
-  {
-    id: "kai",
-    name: "Kai Tanaka",
-    avatar: "https://i.pravatar.cc/150?u=kai",
-    status: "Available for projects",
-    online: false,
-    verified: false,
-  },
-  {
-    id: "zara",
-    name: "Zara Hassan",
-    avatar: "https://i.pravatar.cc/150?u=zara",
-    status: "Design Systems @Company",
-    online: true,
-    verified: false,
-  },
-  {
-    id: "liam",
-    name: "Liam O'Connor",
-    avatar: "https://i.pravatar.cc/150?u=liam",
-    status: "Frontend Developer",
-    online: false,
-    verified: false,
-  },
-]
-
 export default function UsersScreen() {
   const [searchQuery, setSearchQuery] = useState("")
-  const [users] = useState(generateUsers())
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const { authenticationStore } = useStores()
+  const { themed } = useAppTheme()
+
+  useEffect(() => {
+    async function fetchFollowing() {
+      const client = authenticationStore.client;
+      const session = authenticationStore.session;
+      if (!client || !session) return;
+      try {
+        const agent = new Agent(session);
+
+        // Get the user's following list
+        const following = await agent.getFollows({
+          actor: session.did,
+          limit: 100,
+        })
+
+        // Get detailed profiles for each followed user
+        const profiles = await agent.getProfiles({
+          actors: following.data.follows.map(f => f.did),
+        })
+
+        const formattedUsers: User[] = profiles.data.profiles.map(profile => ({
+          did: profile.did,
+          handle: profile.handle,
+          displayName: profile.displayName || profile.handle,
+          avatar: profile.avatar,
+          description: profile.description,
+          verified: profile.viewer?.muted !== true, // Just an example condition
+          online: false, // We could implement real online status later
+        }))
+
+        setUsers(formattedUsers)
+      } catch (error) {
+        console.error('Error fetching following:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchFollowing()
+  }, [authenticationStore.session])
 
   const filteredUsers = users.filter(
     user =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.status?.toLowerCase().includes(searchQuery.toLowerCase())
+      user.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.description?.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   const renderUser = ({ item: user }: { item: User }) => (
-    <TouchableOpacity style={$userCard} activeOpacity={0.7}>
-      <View style={$userContainer}>
-        <View style={$avatarContainer}>
-          <Image source={{ uri: user.avatar }} style={$avatar} />
-          {user.online && <View style={$onlineBadge} />}
+    <ListItem
+      LeftComponent={
+        <View style={themed($avatarContainer)}>
+          <Image
+            source={{ uri: user.avatar || 'https://i.pravatar.cc/150' }}
+            style={themed($avatar)}
+          />
+          {user.online && <View style={themed($onlineBadge)} />}
         </View>
-        
-        <View style={$userInfo}>
-          <View style={$nameRow}>
-            <Text style={$userName}>{user.name}</Text>
-            {user.verified && <Text style={$verifiedBadge}>✓</Text>}
-          </View>
-          {user.status && (
-            <Text style={$userStatus} numberOfLines={1}>
-              {user.status}
-            </Text>
-          )}
-        </View>
-
-        <TouchableOpacity style={$followButton}>
-          <Text style={$followButtonText}>Follow</Text>
-        </TouchableOpacity>
+      }
+      topSeparator={false}
+      bottomSeparator
+      height={72}
+    >
+      <View style={themed($userInfo)}>
+        <Text text={user.displayName} size="xs" style={themed($userName)} numberOfLines={1} />
+        {user.description && <Text text={user.description} size="xs" style={themed($userStatus)} numberOfLines={1} />}
       </View>
-    </TouchableOpacity>
+    </ListItem>
   )
 
   return (
-    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContainer}>
-      <View style={$header}>
-        <Text preset="heading" style={$headerText}>
-          Discover People
-        </Text>
+    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screenContainer)}>
+      <View style={themed($header)}>
+        <Text tx="contactsScreen:title" preset="heading" style={themed($headerText)} />
       </View>
-
-      <View style={$searchContainer}>
+      <View style={themed($searchContainer)}>
         <TextInput
-          style={$searchInput}
-          placeholder="Search people..."
+          style={themed($searchInput)}
+          tx="contactsScreen:searchPlaceholder"
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholderTextColor={colors.text}
+        // placeholderTextColor={colors.text}
         />
       </View>
 
-      <FlatList
+      <ListView
         data={filteredUsers}
         renderItem={renderUser}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={$listContent}
+        keyExtractor={(item: any) => item.did}
+        estimatedItemSize={72}
+        contentContainerStyle={themed($listContent)}
         showsVerticalScrollIndicator={false}
       />
     </Screen>
   )
 }
 
-const $screenContainer: ViewStyle = {
+const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flex: 1,
   backgroundColor: colors.background,
-}
+})
 
-const $header: ViewStyle = {
+const $header: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   paddingHorizontal: spacing.lg,
   paddingVertical: spacing.md,
-}
+})
 
-const $headerText: TextStyle = {
+const $headerText: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 32,
-}
+  color: colors.text,
+})
 
-const $searchContainer: ViewStyle = {
+const $searchContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   paddingHorizontal: spacing.lg,
   paddingBottom: spacing.sm,
-}
+})
 
-const $searchInput: TextStyle = {
+const $searchInput: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   height: 40,
   backgroundColor: colors.palette.neutral200,
   borderRadius: 20,
   paddingHorizontal: spacing.md,
   fontSize: 16,
-}
+  color: colors.text,
+})
 
-const $listContent: ViewStyle = {
+const $listContent: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   paddingHorizontal: spacing.lg,
   paddingBottom: spacing.lg,
-}
+})
 
-const $userCard: ViewStyle = {
+const $userCard: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   marginBottom: spacing.xs,
-}
+})
 
-const $userContainer: ViewStyle = {
+const $userContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flexDirection: "row",
   alignItems: "center",
   paddingVertical: spacing.xs,
-}
+})
 
-const $avatarContainer: ViewStyle = {
+const $avatarContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   position: "relative",
-}
+  width: 44,
+  height: 44,
+  marginRight: spacing.md,
+  justifyContent: "center",
+  marginTop: "auto",
+  marginBottom: "auto",
+})
 
-const $avatar: ImageStyle = {
+const $avatar: ThemedStyle<ImageStyle> = ({ colors }) => ({
   width: 44,
   height: 44,
   borderRadius: 22,
-}
+  backgroundColor: colors.palette.neutral300,
+})
 
-const $onlineBadge: ViewStyle = {
+const $onlineBadge: ThemedStyle<ViewStyle> = ({ colors }) => ({
   position: "absolute",
   bottom: 0,
   right: 0,
@@ -223,46 +190,45 @@ const $onlineBadge: ViewStyle = {
   backgroundColor: "#4CAF50",
   borderWidth: 2,
   borderColor: colors.background,
-}
+})
 
-const $userInfo: ViewStyle = {
+const $userInfo: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flex: 1,
   marginLeft: spacing.sm,
-}
+})
 
-const $nameRow: ViewStyle = {
+const $nameRow: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flexDirection: "row",
   alignItems: "center",
-}
+})
 
-const $userName: TextStyle = {
+const $userName: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   fontSize: 15,
   fontWeight: "600",
   marginRight: spacing.xs,
-}
+})
 
-const $verifiedBadge: TextStyle = {
+const $verifiedBadge: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.palette.primary500,
   fontSize: 13,
   marginTop: 1,
-}
+})
 
-const $userStatus: TextStyle = {
-  fontSize: 13,
-  color: colors.dim,
+const $userStatus: ThemedStyle<TextStyle> = ({ colors }) => ({
+  color: colors.textDim,
   marginTop: 1,
-}
+})
 
-const $followButton: ViewStyle = {
+const $followButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   backgroundColor: colors.palette.primary500,
   paddingHorizontal: spacing.md,
   paddingVertical: spacing.xs,
   borderRadius: 15,
   marginLeft: spacing.sm,
-}
+})
 
-const $followButtonText: TextStyle = {
+const $followButtonText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.background,
   fontSize: 13,
   fontWeight: "600",
-}
+})

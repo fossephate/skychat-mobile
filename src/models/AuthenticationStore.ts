@@ -1,5 +1,5 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
-import { ReactNativeOAuthClient } from "@aquareum/atproto-oauth-client-react-native"
+import { OAuthSession, ReactNativeOAuthClient } from "@aquareum/atproto-oauth-client-react-native"
 
 let authClient: ReactNativeOAuthClient | null = null
 
@@ -9,6 +9,7 @@ export const AuthenticationStoreModel = types
     authToken: types.maybe(types.string),
     authEmail: "",
     didAuthenticate: types.optional(types.boolean, false),
+    session: types.maybe(types.frozen<OAuthSession>()),
   })
   .views((store) => ({
     get isAuthenticated() {
@@ -43,6 +44,9 @@ export const AuthenticationStoreModel = types
       store.authEmail = ""
       store.didAuthenticate = false
       authClient = null
+    },
+    setSession(session: OAuthSession) {
+      store.session = session
     },
   }))
 

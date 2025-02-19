@@ -10,9 +10,14 @@ const en = {
     chatsTab: "Chats",
     settingsTab: "Settings",
   },
+  contactsScreen: {
+    title: "Contacts",
+    searchPlaceholder: "Search contacts...",
+  },
   welcomeScreen: {
-    readyForLaunch: "Welcome to SkyChat!",
-    postscript: "Message your friends online securely using MLS!",
+    postscript:
+      "psst  — This probably isn't what your app looks like. (Unless your designer handed you these screens, and in that case, ship it!)",
+    readyForLaunch: "Your app, almost ready for launch!",
     exciting: "(ohh, this is exciting!)",
     letsGo: "Let's go!",
   },
@@ -37,17 +42,13 @@ const en = {
   loginScreen: {
     logIn: "Log In",
     enterDetails:
-      "Enter your handle to log in with Bluesky.",
+      "Enter your details below to unlock top secret info. You'll never guess what we've got waiting. Or maybe you will; it's not rocket science here.",
     emailFieldLabel: "Email",
     passwordFieldLabel: "Password",
     emailFieldPlaceholder: "Enter your email address",
     passwordFieldPlaceholder: "Super secret password here",
     tapToLogIn: "Tap to log in!",
     hint: "Hint: you can use any email address and your favorite password :)",
-    handleNotFound: "Handle not found",
-    usernameFieldLabel: "Handle",
-    usernameFieldPlaceholder: "Enter your handle (e.g. alice.bsky.social)",
-    loginButton: "Log In",
   },
   demoNavigator: {
     componentsTab: "Components",
@@ -106,31 +107,29 @@ const en = {
     windowsReactotronHint:
       "If this doesn't work, ensure the Reactotron desktop app is running and reload app.",
   },
-  demoPodcastListScreen: {
-    title: "React Native Radio episodes",
-    onlyFavorites: "Only Show Favorites",
-    favoriteButton: "Favorite",
-    unfavoriteButton: "Unfavorite",
-    accessibility: {
-      cardHint:
-        "Double tap to listen to the episode. Double tap and hold to {{action}} this episode.",
-      switch: "Switch on to only show favorites",
-      favoriteAction: "Toggle Favorite",
-      favoriteIcon: "Episode not favorited",
-      unfavoriteIcon: "Episode favorited",
-      publishLabel: "Published {{date}}",
-      durationLabel: "Duration: {{hours}} hours {{minutes}} minutes {{seconds}} seconds",
-    },
-    noFavoritesEmptyState: {
-      heading: "This looks a bit empty",
-      content:
-        "No favorites have been added yet. Tap the heart on an episode to add it to your favorites!",
-    },
-  },
   chatScreen: {
     title: "Chat with {{name}}",
     inputPlaceholder: "Type a message...",
     send: "Send",
+  },
+  settings: {
+    account: "Account",
+    privacy: "Privacy",
+    security: "Security",
+    connectedAccounts: "Connected Accounts",
+    preferences: "Preferences",
+    notifications: "Notifications",
+    darkMode: "Dark Mode",
+    autoplayMedia: "Autoplay Media",
+    language: "Language",
+    storageAndData: "Storage and Data",
+    dataUsage: "Data Usage",
+    storage: "Storage",
+    support: "Support",
+    helpCenter: "Help Center",
+    reportProblem: "Report a Problem",
+    termsOfService: "Terms of Service",
+    editProfile: "Edit Profile",
   },
 }
 

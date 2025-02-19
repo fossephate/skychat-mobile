@@ -6,7 +6,7 @@ import { useFonts } from "expo-font"
 import { customFontsToLoad } from "src/theme"
 import { initI18n } from "@/i18n"
 import { loadDateFnsLocale } from "@/utils/formatDate"
-import { useThemeProvider } from "@/utils/useAppTheme"
+import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 
 export default observer(function Layout() {
 
@@ -23,5 +23,11 @@ export default observer(function Layout() {
   //   router.replace("/welcome")
   // }, [])
 
-  return <Stack screenOptions={{ headerShown: false }} />
+  const { themeScheme } = useThemeProvider();
+  const { themed, theme } = useAppTheme();
+
+  return <Stack screenOptions={{
+    headerShown: false,
+    navigationBarColor: theme.colors.palette.neutral300,
+  }} />
 })

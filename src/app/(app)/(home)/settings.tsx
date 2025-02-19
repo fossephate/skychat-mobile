@@ -1,15 +1,55 @@
-import React from "react"
+import { useStores } from "@/models";
+import { router } from "expo-router";
+import React, { useEffect } from "react"
 import { View, ViewStyle, TextStyle, ScrollView, Image, ImageStyle, Switch } from "react-native"
 import { Screen, Text, ListItem } from "src/components"
 import { colors, spacing } from "src/theme"
+import { Agent } from '@atproto/api'
+import { useAppTheme } from "@/utils/useAppTheme"
+import type { ThemedStyle } from "@/theme"
+import FontAwesome from '@expo/vector-icons/FontAwesome'
 
 export default function SettingsScreen() {
-  const userProfile = {
-    name: "Bob",
-    handle: "@bob",
-    bio: "Digital creator & tech enthusiast",
-    avatar: "https://i.pravatar.cc/150?u=bob",
-  }
+
+  const { authenticationStore } = useStores();
+  const { themed } = useAppTheme();
+  const client = authenticationStore.client;
+  const session = authenticationStore.session;
+
+  const [userProfile, setUserProfile] = React.useState({
+    displayName: "",
+    handle: "",
+    description: "",
+    avatar: "",
+  })
+
+  const [loading, setLoading] = React.useState(true)
+
+  useEffect(() => {
+    async function fetchProfile() {
+      if (!client || !session) return;
+
+      try {
+        const agent = new Agent(session)
+        const profile = await agent.getProfile({
+          actor: session.did,
+        })
+
+        setUserProfile({
+          displayName: profile.data.displayName || profile.data.handle,
+          handle: profile.data.handle,
+          description: profile.data.description || "",
+          avatar: profile.data.avatar || "https://i.pravatar.cc/150",
+        })
+      } catch (error) {
+        console.error("Error fetching profile:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchProfile()
+  }, [client, session])
 
   const [notificationsEnabled, setNotificationsEnabled] = React.useState(true)
   const [darkMode, setDarkMode] = React.useState(false)
@@ -19,204 +59,218 @@ export default function SettingsScreen() {
     <Switch
       value={value}
       onValueChange={onValueChange}
-      trackColor={{ false: colors.palette.neutral400, true: colors.palette.primary300 }}
-      thumbColor={value ? colors.palette.primary500 : colors.palette.neutral200}
+      trackColor={themed($switchTrackColor)}
+      thumbColor={themed($switchThumbColor(value))}
     />
   )
 
+  // Update the ListItem icons to use FontAwesome
+  const renderIcon = (name: string) => ({ colors }: { colors: { text: string } }) => {
+    return (
+      <View style={themed($iconContainer)}>
+        <FontAwesome name={name as any} size={24} color={colors.text} />
+      </View>
+    )
+  }
+
+  const handleLogout = async () => {
+    try {
+      if (client) {
+        // await client.();
+        authenticationStore.setDidAuthenticate(false);
+      }
+    } catch (err) {
+      console.error("Logout error:", err)
+    }
+    router.replace("/welcome" as any)
+  }
+
   return (
-    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContainer}>
-      <ScrollView style={$container} showsVerticalScrollIndicator={false}>
+    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screenContainer)}>
+      <ScrollView style={themed($container)} showsVerticalScrollIndicator={false}>
         {/* Profile Card */}
-        <View style={$profileCard}>
-          <View style={$profileHeader}>
-            <View style={$avatarContainer}>
-              <Image source={{ uri: userProfile.avatar }} style={$avatar} />
+        <View style={themed($profileCard)}>
+          <View style={themed($profileHeader)}>
+            <View style={themed($avatarContainer)}>
+              <Image source={{ uri: userProfile.avatar }} style={themed($avatar)} />
             </View>
-            <View style={$profileInfo}>
-              <Text preset="heading" style={$name}>
-                {userProfile.name}
+            <View style={themed($profileInfo)}>
+              <Text preset="heading" style={themed($name)}>
+                {userProfile.displayName}
               </Text>
-              <Text style={$handle}>{userProfile.handle}</Text>
-              <Text style={$bio}>{userProfile.bio}</Text>
+              <Text style={themed($handle)}>@{userProfile.handle}</Text>
+              <Text style={themed($bio)} numberOfLines={3}>
+                {userProfile.description}
+              </Text>
             </View>
           </View>
-          <ListItem
-            text="Edit Profile"
-            leftIcon="user"
-            style={$editProfileButton}
-            textStyle={$editProfileText}
-          />
+          {/* <ListItem
+            tx="settings:editProfile"
+            LeftComponent={themed(renderIcon("user"))}
+            style={themed($editProfileButton)}
+            textStyle={themed($editProfileText)}
+          /> */}
         </View>
 
         {/* Account Settings */}
-        <View style={$section}>
-          <Text preset="heading" style={$sectionTitle}>
-            Account
-          </Text>
-          <View style={$sectionContent}>
+        <View style={themed($section)}>
+          <Text preset="heading" style={themed($sectionTitle)} tx="settings:account" />
+          <View style={themed($sectionContent)}>
             <ListItem
-              text="Privacy"
-              leftIcon="lock"
+              tx="settings:privacy"
+              LeftComponent={themed(renderIcon("lock"))}
               rightIcon="caretRight"
-              style={$listItem}
+              style={themed($listItem)}
             />
             <ListItem
-              text="Security"
-              leftIcon="shield"
+              tx="settings:security"
+              LeftComponent={themed(renderIcon("shield"))}
               rightIcon="caretRight"
-              style={$listItem}
+              style={themed($listItem)}
             />
             <ListItem
-              text="Connected Accounts"
-              leftIcon="link"
+              tx="settings:connectedAccounts"
+              LeftComponent={themed(renderIcon("link"))}
               rightIcon="caretRight"
-              style={$listItem}
+              style={themed($listItem)}
             />
           </View>
         </View>
 
         {/* Preferences */}
-        <View style={$section}>
-          <Text preset="heading" style={$sectionTitle}>
-            Preferences
-          </Text>
-          <View style={$sectionContent}>
+        <View style={themed($section)}>
+          <Text preset="heading" style={themed($sectionTitle)} tx="settings:preferences" />
+          <View style={themed($sectionContent)}>
             <ListItem
-              text="Notifications"
-              leftIcon="bell"
-              style={$listItem}
+              tx="settings:notifications"
+              LeftComponent={themed(renderIcon("bell"))}
+              style={themed($listItem)}
               RightComponent={renderSwitch(notificationsEnabled, setNotificationsEnabled)}
             />
             <ListItem
-              text="Dark Mode"
-              leftIcon="moon"
-              style={$listItem}
+              tx="settings:darkMode"
+              LeftComponent={themed(renderIcon("moon"))}
+              style={themed($listItem)}
               RightComponent={renderSwitch(darkMode, setDarkMode)}
             />
             <ListItem
-              text="Autoplay Media"
-              leftIcon="play"
-              style={$listItem}
+              tx="settings:autoplayMedia"
+              LeftComponent={themed(renderIcon("play"))}
+              style={themed($listItem)}
               RightComponent={renderSwitch(autoplay, setAutoplay)}
             />
             <ListItem
-              text="Language"
-              leftIcon="globe"
+              tx="settings:language"
+              LeftComponent={themed(renderIcon("globe"))}
               rightIcon="caretRight"
               rightText="English"
-              style={$listItem}
+              style={themed($listItem)}
             />
           </View>
         </View>
 
         {/* Storage and Data */}
-        <View style={$section}>
-          <Text preset="heading" style={$sectionTitle}>
-            Storage and Data
-          </Text>
-          <View style={$sectionContent}>
+        <View style={themed($section)}>
+          <Text preset="heading" style={themed($sectionTitle)} tx="settings:storageAndData" />
+          <View style={themed($sectionContent)}>
             <ListItem
-              text="Data Usage"
-              leftIcon="database"
+              tx="settings:dataUsage"
+              LeftComponent={themed(renderIcon("database"))}
               rightIcon="caretRight"
-              style={$listItem}
+              style={themed($listItem)}
             />
             <ListItem
-              text="Storage"
-              leftIcon="save"
+              tx="settings:storage"
+              LeftComponent={themed(renderIcon("save"))}
               rightText="1.2 GB"
               rightIcon="caretRight"
-              style={$listItem}
+              style={themed($listItem)}
             />
           </View>
         </View>
 
         {/* Support */}
-        <View style={$section}>
-          <Text preset="heading" style={$sectionTitle}>
-            Support
-          </Text>
-          <View style={$sectionContent}>
+        <View style={themed($section)}>
+          <Text preset="heading" style={themed($sectionTitle)} tx="settings:support" />
+          <View style={themed($sectionContent)}>
             <ListItem
-              text="Help Center"
-              leftIcon="helpCircle"
+              tx="settings:helpCenter"
+              LeftComponent={themed(renderIcon("help-circle"))}
               rightIcon="caretRight"
-              style={$listItem}
+              style={themed($listItem)}
             />
             <ListItem
-              text="Report a Problem"
-              leftIcon="alertTriangle"
+              tx="settings:reportProblem"
+              LeftComponent={themed(renderIcon("alert-triangle"))}
               rightIcon="caretRight"
-              style={$listItem}
+              style={themed($listItem)}
             />
             <ListItem
-              text="Terms of Service"
-              leftIcon="fileText"
+              tx="settings:termsOfService"
+              LeftComponent={themed(renderIcon("file-text"))}
               rightIcon="caretRight"
-              style={$listItem}
+              style={themed($listItem)}
             />
           </View>
         </View>
 
         {/* Account Actions */}
-        <View style={$section}>
+        <View style={themed($section)}>
           <ListItem
-            text="Log Out"
-            leftIcon="logOut"
-            style={[$listItem, $destructiveItem]}
-            textStyle={$destructiveText}
-            onPress={() => {
-              router.replace("/welcome")
-            }}
+            tx="common:logOut"
+            LeftComponent={themed(renderIcon("log-out"))}
+            style={[themed($listItem), themed($destructiveItem)]}
+            textStyle={themed($destructiveText)}
+            onPress={handleLogout}
           />
         </View>
 
-        <View style={$footer}>
-          <Text style={$version}>Version 2.1.0</Text>
+        <View style={themed($footer)}>
+          <Text style={themed($version)}>Version 2.1.0</Text>
         </View>
       </ScrollView>
     </Screen>
   )
 }
 
-const $screenContainer: ViewStyle = {
+// Update the themed styles to use theme values consistently
+const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flex: 1,
   backgroundColor: colors.background,
-}
+})
 
-const $container: ViewStyle = {
+const $container: ThemedStyle<ViewStyle> = () => ({
   flex: 1,
-}
+})
 
-const $profileCard: ViewStyle = {
+const $profileCard: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   margin: spacing.lg,
   backgroundColor: colors.palette.neutral100,
   borderRadius: 20,
   padding: spacing.lg,
-  shadowColor: "#000",
+  shadowColor: colors.palette.neutral800,
   shadowOffset: { width: 0, height: 2 },
   shadowOpacity: 0.1,
   shadowRadius: 8,
   elevation: 3,
-}
+})
 
-const $profileHeader: ViewStyle = {
+const $profileHeader: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flexDirection: "row",
   marginBottom: spacing.md,
-}
+})
 
-const $avatarContainer: ViewStyle = {
+const $avatarContainer: ThemedStyle<ViewStyle> = () => ({
   position: "relative",
-}
+})
 
-const $avatar: ImageStyle = {
+const $avatar: ThemedStyle<ImageStyle> = () => ({
   width: 80,
   height: 80,
   borderRadius: 40,
-}
+})
 
-const $verifiedBadge: ViewStyle = {
+const $verifiedBadge: ThemedStyle<ViewStyle> = ({ colors }) => ({
   position: "absolute",
   bottom: -4,
   right: -4,
@@ -228,79 +282,99 @@ const $verifiedBadge: ViewStyle = {
   alignItems: "center",
   borderWidth: 2,
   borderColor: colors.background,
-}
+})
 
-const $profileInfo: ViewStyle = {
+const $profileInfo: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   flex: 1,
   marginLeft: spacing.md,
-}
+})
 
-const $name: TextStyle = {
+const $name: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 24,
+  color: colors.text,
   marginBottom: spacing.xs,
-}
+})
 
-const $handle: TextStyle = {
+const $handle: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 16,
-  color: colors.dim,
+  color: colors.textDim,
   marginBottom: spacing.xs,
-}
+})
 
-const $bio: TextStyle = {
+const $bio: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 14,
   color: colors.text,
-}
+})
 
-const $editProfileButton: ViewStyle = {
+const $editProfileButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   backgroundColor: colors.palette.primary100,
   borderRadius: 12,
   marginTop: spacing.sm,
-}
+})
 
-const $editProfileText: TextStyle = {
+const $editProfileText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.palette.primary500,
   fontWeight: "bold",
-}
+})
 
-const $section: ViewStyle = {
+const $section: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginBottom: spacing.lg,
-}
+})
 
-const $sectionTitle: TextStyle = {
+const $sectionTitle: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   fontSize: 18,
+  color: colors.text,
   marginLeft: spacing.lg,
   marginBottom: spacing.sm,
-}
+})
 
-const $sectionContent: ViewStyle = {
+const $sectionContent: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   backgroundColor: colors.palette.neutral100,
   borderRadius: 16,
   marginHorizontal: spacing.lg,
-}
+})
 
-const $listItem: ViewStyle = {
+const $listItem: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   paddingVertical: spacing.sm,
   paddingHorizontal: spacing.md,
   borderBottomWidth: 1,
-  borderBottomColor: colors.palette.neutral200,
-}
+  borderBottomColor: colors.separator,
+  alignItems: 'center',
+  minHeight: 44,
+})
 
-const $destructiveItem: ViewStyle = {
-  backgroundColor: colors.palette.angry100,
+const $destructiveItem: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+  backgroundColor: colors.errorBackground,
   marginHorizontal: spacing.lg,
   borderRadius: 16,
-}
+})
 
-const $destructiveText: TextStyle = {
+const $destructiveText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.error,
-}
+})
 
-const $footer: ViewStyle = {
+const $footer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   alignItems: "center",
   padding: spacing.lg,
-}
+})
 
-const $version: TextStyle = {
-  color: colors.dim,
+const $version: ThemedStyle<TextStyle> = ({ colors }) => ({
+  color: colors.textDim,
   fontSize: 12,
-}
+})
+
+const $switchTrackColor: ThemedStyle<any> = ({ colors }) => ({
+  false: colors.palette.neutral400,
+  true: colors.palette.primary300,
+})
+
+const $switchThumbColor = (value: boolean): ThemedStyle<string> => ({ colors }) =>
+  value ? colors.palette.primary500 : colors.palette.neutral200
+
+// Add this new style near the other style definitions
+const $iconContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
+  justifyContent: 'center',
+  alignItems: 'center',
+  minHeight: 44, // This matches common list item heights
+  marginRight: spacing.md,
+})

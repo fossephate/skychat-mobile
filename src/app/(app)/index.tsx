@@ -13,26 +13,19 @@ export default observer(function LoadingScreen() {
   // setTimeout(() => {
   //   router.replace("/login")
   // }, 3000);
-
   // const { session, state } = router.params;
-
-  console.log("index rendered!");
-  console.log("authenticationStore.client", authenticationStore.client)
-
-
 
   useEffect(() => {
     (async () => {
       const client = authenticationStore.client;
       if (params.code && params.state && params.iss && client) {
-        console.log("HAVE ALL THE THINGS")
         let urlParams = new URLSearchParams();
         urlParams.set("code", params.code as string)
         urlParams.set("state", params.state as string)
         urlParams.set("iss", params.iss as string)
-        console.log("urlParams", urlParams)
         const { session, state } = await client.callback(urlParams)
         console.log(`logged in as ${session.sub}!`)
+        authenticationStore.setSession(session)
         router.replace("/chats")
       }
     })()

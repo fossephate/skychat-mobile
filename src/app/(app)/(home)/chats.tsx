@@ -12,10 +12,11 @@ import {
   ScrollView
 } from "react-native"
 import { Screen, Text, ListItem } from "src/components"
-import { colors, spacing } from "src/theme"
 import { useRouter } from "expo-router"
 import { router } from "expo-router"
-import { Chat, renderChatItem, User } from "src/components/Chat/ChatItem"
+import { Chat, ChatItem, User } from "src/components/Chat/ChatItem"
+import { colors, spacing, ThemedStyle } from "src/theme"
+import { useAppTheme } from "src/utils/useAppTheme"
 
 
 const UserSelectDrawer = ({ isVisible, onClose, users }: {
@@ -24,6 +25,7 @@ const UserSelectDrawer = ({ isVisible, onClose, users }: {
   users: User[]
 }) => {
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set())
+  const { themed } = useAppTheme()
 
   const toggleUser = (userId: string) => {
     const newSelected = new Set(selectedUsers)
@@ -43,47 +45,46 @@ const UserSelectDrawer = ({ isVisible, onClose, users }: {
       onRequestClose={onClose}
     >
       <TouchableOpacity
-        style={$modalOverlay}
+        style={themed($modalOverlay)}
         activeOpacity={1}
         onPress={onClose}
       >
-        <View style={$drawerContainer}>
+        <View style={themed($drawerContainer)}>
           <TouchableOpacity activeOpacity={1}>
-            <View style={$drawerContent}>
-              <View style={$drawerHeader}>
-                <Text style={$drawerTitle}>New Chat</Text>
+            <View style={themed($drawerContent)}>
+              <View style={themed($drawerHeader)}>
+                <Text style={themed($drawerTitle)}>New Chat</Text>
                 <TouchableOpacity
-                  style={$createButton}
+                  style={themed($createButton)}
                   onPress={() => {
                     console.log("Selected users:", Array.from(selectedUsers))
                     onClose()
                   }}
                 >
-                  <Text style={$createButtonText}>Create</Text>
+                  <Text style={themed($createButtonText)}>Create</Text>
                 </TouchableOpacity>
               </View>
 
-              <ScrollView style={$drawerScroll}>
+              <ScrollView style={themed($drawerScroll)}>
                 {users.map((user) => (
                   <TouchableOpacity
                     key={user.id}
-                    style={$userSelectItem}
+                    style={themed($userSelectItem)}
                     onPress={() => toggleUser(user.id)}
                   >
-                    <View style={$checkboxContainer}>
+                    <View style={themed($checkboxContainer)}>
                       <View style={[
-                        $checkbox,
-                        selectedUsers.has(user.id) && $checkboxSelected
+                        themed($checkbox),
+                        selectedUsers.has(user.id) && themed($checkboxSelected)
                       ]}>
                         {selectedUsers.has(user.id) && (
-                          <Text style={$checkmark}>✓</Text>
+                          <Text style={themed($checkmark)}>✓</Text>
                         )}
                       </View>
                     </View>
-                    <Image source={{ uri: user.avatar }} style={$selectAvatar} />
-                    <View style={$userInfo}>
-                      <Text style={$userName}>{user.name}</Text>
-                      {user.verified && <Text style={$verifiedBadgeSmall}>✓</Text>}
+                    <Image source={{ uri: user.avatar }} style={themed($selectAvatar)} />
+                    <View style={themed($userInfo)}>
+                      <Text style={themed($userName)}>{user.name}</Text>
                     </View>
                   </TouchableOpacity>
                 ))}
@@ -202,40 +203,41 @@ export default function ChatsScreen() {
   const [users] = useState(generateUsers())
   const [composeDrawerOpen, setComposeDrawerOpen] = useState(false)
   const router = useRouter()
+  const { themed } = useAppTheme()
 
 
 
 
 
   return (
-    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={$screenContainer}>
-      <View style={$header}>
-        <Text preset="heading" style={$headerText}>
+    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screenContainer)}>
+      <View style={themed($header)}>
+        <Text preset="heading" style={themed($headerText)}>
           Messages
         </Text>
         <TouchableOpacity
-          style={$composeButton}
+          style={themed($composeButton)}
           onPress={() => setComposeDrawerOpen(true)}
         >
-          <Text style={$composeIcon}>✏️</Text>
+          <Text style={themed($composeIcon)}>✏️</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={$searchContainer}>
+      <View style={themed($searchContainer)}>
         <TextInput
-          style={$searchInput}
+          style={themed($searchInput)}
           placeholder="Search messages..."
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholderTextColor={colors.text}
+          placeholderTextColor={themed(({ colors }) => colors.textDim)}
         />
       </View>
 
       <FlatList
         data={chats}
-        renderItem={renderChatItem}
+        renderItem={({ item }) => <ChatItem item={item} />}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={$listContent}
+        contentContainerStyle={themed($listContent)}
         showsVerticalScrollIndicator={false}
       />
 
@@ -249,55 +251,58 @@ export default function ChatsScreen() {
 }
 
 // Styles
-const $screenContainer: ViewStyle = {
+const $screenContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flex: 1,
   backgroundColor: colors.background,
-}
+})
 
-const $header: ViewStyle = {
+const $header: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   paddingHorizontal: spacing.lg,
   paddingVertical: spacing.md,
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
-}
+})
 
-const $headerText: TextStyle = {
+const $headerText: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 32,
-}
+  color: colors.text,
+})
 
-const $composeButton: ViewStyle = {
+const $composeButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   width: 40,
   height: 40,
   borderRadius: 20,
   backgroundColor: colors.palette.primary100,
   justifyContent: "center",
   alignItems: "center",
-}
+})
 
-const $composeIcon: TextStyle = {
+const $composeIcon: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 20,
-}
+  color: colors.text,
+})
 
-const $searchContainer: ViewStyle = {
+const $searchContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   paddingHorizontal: spacing.lg,
-  paddingBottom: spacing.md,
-}
+  paddingBottom: spacing.sm,
+})
 
-const $searchInput: TextStyle = {
+const $searchInput: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   height: 40,
   backgroundColor: colors.palette.neutral200,
   borderRadius: 20,
   paddingHorizontal: spacing.md,
   fontSize: 16,
-}
+  color: colors.text,
+})
 
-const $listContent: ViewStyle = {
+const $listContent: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   paddingHorizontal: spacing.lg,
   paddingBottom: spacing.lg,
-}
+})
 
-const $chatCard: ViewStyle = {
+const $chatCard: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   backgroundColor: colors.palette.neutral100,
   borderRadius: 16,
   marginBottom: spacing.sm,
@@ -306,44 +311,42 @@ const $chatCard: ViewStyle = {
   shadowOpacity: 0.1,
   shadowRadius: 8,
   elevation: 3,
-}
+})
 
-const $pinnedChat: ViewStyle = {
+const $pinnedChat: ThemedStyle<ViewStyle> = ({ colors }) => ({
   borderLeftWidth: 3,
   borderLeftColor: colors.palette.primary500,
-}
+})
 
-const $listItem: ViewStyle = {
+const $listItem: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   paddingVertical: spacing.sm,
   paddingHorizontal: spacing.md,
-}
+})
 
-const $avatarContainer: ViewStyle = {
+const $avatarContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   position: "relative",
   marginRight: spacing.sm,
-}
+})
 
-const $avatar: ImageStyle = {
+const $avatar: ThemedStyle<ImageStyle> = ({ colors, spacing }) => ({
   width: 50,
   height: 50,
   borderRadius: 25,
-}
+})
 
-const $groupAvatar: ViewStyle = {
+const $groupAvatar: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.palette.secondary300,
   justifyContent: "center",
   alignItems: "center",
-}
+})
 
-const $groupAvatarText: TextStyle = {
+const $groupAvatarText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.background,
   fontSize: 20,
   fontWeight: "bold",
-}
+})
 
-
-
-const $memberCount: ViewStyle = {
+const $memberCount: ThemedStyle<ViewStyle> = ({ colors }) => ({
   position: "absolute",
   bottom: -2,
   right: -2,
@@ -355,67 +358,70 @@ const $memberCount: ViewStyle = {
   alignItems: "center",
   borderWidth: 2,
   borderColor: colors.background,
-}
+})
 
-const $memberCountText: TextStyle = {
+const $memberCountText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.background,
   fontSize: 11,
   fontWeight: "bold",
   justifyContent: "center",
   alignItems: "center",
   position: "absolute",
-}
+})
 
-const $chatName: TextStyle = {
+const $chatName: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 16,
   marginBottom: 2,
-}
+  color: colors.text,
+})
 
-const $unreadChatName: TextStyle = {
+const $unreadChatName: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontWeight: "bold",
-}
+  color: colors.text,
+})
 
-const $messageContainer: ViewStyle = {
+const $messageContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flexDirection: "row",
   alignItems: "center",
-}
+})
 
-const $messageText: TextStyle = {
+const $messageText: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 14,
   color: colors.palette.neutral600,
   flex: 1,
-}
+})
 
-const $unreadMessageText: TextStyle = {
+const $unreadMessageText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.text,
   fontWeight: "500",
-}
+})
 
-const $mutedText: TextStyle = {
+const $mutedText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.palette.neutral600,
   opacity: 0.6,
-}
+})
 
-const $senderName: TextStyle = {
+const $senderName: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontWeight: "bold",
-}
+  color: colors.text,
+})
 
-const $rightContainer: ViewStyle = {
+const $rightContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   alignItems: "flex-end",
-}
+})
 
-const $timestamp: TextStyle = {
+const $timestamp: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   fontSize: 12,
   color: colors.palette.neutral600,
   marginBottom: spacing.xs,
-}
+})
 
-const $unreadTimestamp: TextStyle = {
+const $unreadTimestamp: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.palette.primary500,
   fontWeight: "500",
-}
+})
 
-const $unreadBadge: ViewStyle = {
+const $unreadBadge: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.palette.primary500,
   borderRadius: 12,
   minWidth: 24,
@@ -423,87 +429,87 @@ const $unreadBadge: ViewStyle = {
   justifyContent: "center",
   alignItems: "center",
   paddingHorizontal: 4,
-}
+})
 
-const $mutedBadge: ViewStyle = {
+const $mutedBadge: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.palette.neutral600,
   opacity: 0.6,
-}
+})
 
-const $unreadText: TextStyle = {
+const $unreadText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.background,
   fontSize: 13,
   fontWeight: "bold",
-}
+})
 
-const $mutedIcon: TextStyle = {
+const $mutedIcon: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   fontSize: 12,
   marginTop: spacing.xs,
-}
+})
 
-const $pinnedIcon: TextStyle = {
+const $pinnedIcon: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   fontSize: 12,
   marginTop: spacing.xs,
-}
+})
 
-const $modalOverlay: ViewStyle = {
+const $modalOverlay: ThemedStyle<ViewStyle> = ({ colors }) => ({
   flex: 1,
   backgroundColor: "rgba(0, 0, 0, 0.5)",
   justifyContent: "flex-end",
-}
+})
 
-const $drawerContainer: ViewStyle = {
+const $drawerContainer: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.background,
   borderTopLeftRadius: 20,
   borderTopRightRadius: 20,
   maxHeight: "80%",
-}
+})
 
-const $drawerContent: ViewStyle = {
+const $drawerContent: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   padding: spacing.md,
-}
+})
 
-const $drawerHeader: ViewStyle = {
+const $drawerHeader: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
   paddingBottom: spacing.md,
   borderBottomWidth: 1,
   borderBottomColor: colors.palette.neutral200,
-}
+})
 
-const $drawerTitle: TextStyle = {
+const $drawerTitle: ThemedStyle<TextStyle> = ({ colors }) => ({
   fontSize: 20,
   fontWeight: "bold",
-}
+})
 
-const $createButton: ViewStyle = {
+const $createButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   backgroundColor: colors.palette.primary500,
   paddingHorizontal: spacing.md,
   paddingVertical: spacing.xs,
   borderRadius: 16,
-}
+})
 
-const $createButtonText: TextStyle = {
+const $createButtonText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.background,
   fontWeight: "bold",
-}
+})
 
-const $userList: ViewStyle = {
+const $userList: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   paddingTop: spacing.sm,
-}
+})
 
-const $userSelectItem: ViewStyle = {
+const $userSelectItem: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flexDirection: "row",
   alignItems: "center",
   paddingVertical: spacing.sm,
-}
+})
 
-const $checkboxContainer: ViewStyle = {
+const $checkboxContainer: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   marginRight: spacing.sm,
-}
+})
 
-const $checkbox: ViewStyle = {
+const $checkbox: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   width: 24,
   height: 24,
   borderRadius: 12,
@@ -511,42 +517,42 @@ const $checkbox: ViewStyle = {
   borderColor: colors.palette.neutral400,
   justifyContent: "center",
   alignItems: "center",
-}
+})
 
-const $checkboxSelected: ViewStyle = {
+const $checkboxSelected: ThemedStyle<ViewStyle> = ({ colors }) => ({
   backgroundColor: colors.palette.primary500,
   borderColor: colors.palette.primary500,
-}
+})
 
-const $checkmark: TextStyle = {
+const $checkmark: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.background,
   fontSize: 14,
   fontWeight: "bold",
-}
+})
 
-const $selectAvatar: ImageStyle = {
+const $selectAvatar: ThemedStyle<ImageStyle> = ({ colors, spacing }) => ({
   width: 40,
   height: 40,
   borderRadius: 20,
   marginRight: spacing.sm,
-}
+})
 
-const $userInfo: ViewStyle = {
+const $userInfo: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   flexDirection: "row",
   alignItems: "center",
   flex: 1,
-}
+})
 
-const $userName: TextStyle = {
+const $userName: ThemedStyle<TextStyle> = ({ colors, spacing }) => ({
   fontSize: 16,
   marginRight: spacing.xs,
-}
+})
 
-const $verifiedBadgeSmall: TextStyle = {
+const $verifiedBadgeSmall: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.palette.primary500,
   fontSize: 14,
-}
+})
 
-const $drawerScroll: ViewStyle = {
+const $drawerScroll: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
   maxHeight: 400,
-}
+})
