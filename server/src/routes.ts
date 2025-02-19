@@ -71,7 +71,7 @@ export const createRouter = (ctx: AppContext) => {
   router.get(
     '/oauth/callback',
     handler(async (req, res) => {
-      const params = new URLSearchParams(req.originalUrl.split('?')[1])
+      let params = new URLSearchParams(req.originalUrl.split('?')[1])
       try {
         const { session } = await ctx.oauthClient.callback(params)
         const clientSession = await getIronSession<Session>(req, res, {
@@ -81,12 +81,16 @@ export const createRouter = (ctx: AppContext) => {
         assert(!clientSession.did, 'session already exists')
         clientSession.did = session.did
         await clientSession.save()
-      } catch (err) {
+      } catch (err: any) {
         ctx.logger.error({ err }, 'oauth callback failed')
         // add the params in the redirect:
-        // return res.redirect('skychat://?error')
         if (err == 'session already exists') {
           return res.redirect(`skychat://exists?${params.toString()}`)
+        }
+        if (err.toString().includes('Unknown authorization')) {
+          // get the string in quotes
+          const errorMessage = err.toString().match(/"([^"]+)"/)[1]
+          params.set('session', errorMessage)
         }
         return res.redirect(`skychat://error?error=${err}&${params.toString()}`)
       }

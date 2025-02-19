@@ -9,6 +9,7 @@ import { loadDateFnsLocale } from "@/utils/formatDate";
 import { useThemeProvider } from "@/utils/useAppTheme";
 import { useFonts } from "expo-font";
 import { OAuthSession, ReactNativeOAuthClient } from "@aquareum/atproto-oauth-client-react-native"
+import { AuthProvider } from '@/contexts/auth'
 
 SplashScreen.preventAutoHideAsync()
 
@@ -29,9 +30,7 @@ export default function Root() {
   const [isI18nInitialized, setIsI18nInitialized] = useState(false)
   const { themeScheme, setThemeContextOverride, ThemeProvider } = useThemeProvider()
 
-  const {
-    authenticationStore: { isAuthenticated },
-  } = useStores()
+  const { authenticationStore } = useStores()
 
   useEffect(() => {
     initI18n()
@@ -50,7 +49,6 @@ export default function Root() {
     (async () => {
       if (loaded) {
         SplashScreen.hideAsync()
-        // router.replace("/welcome")
 
         let client = new ReactNativeOAuthClient({
           clientMetadata: {
@@ -76,8 +74,9 @@ export default function Root() {
         });
 
         console.log("initializing client");
+        authenticationStore.setClient(client)
 
-        const result: undefined | { session: OAuthSession; state: string | null } | { session: OAuthSession; } = await client.init();
+        const result = await client.init();
         console.log("client init results:", result);
         if (result) {
           const { session } = result
@@ -88,9 +87,9 @@ export default function Root() {
           } else {
             console.log(`${session.sub} was restored (last active session)`)
           }
+          authenticationStore.setDidAuthenticate(true)
           router.replace("/chats")
         } else {
-          // console.log("no result")
           router.replace("/welcome")
         }
       }

@@ -4,7 +4,7 @@ import { router } from "expo-router"
 import { observer } from "mobx-react-lite"
 import { useStores } from "src/models"
 import { colors, spacing } from "src/theme"
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { openAuthSessionAsync } from 'expo-web-browser'
 // let Crypto = require('react-native-quick-crypto')
 import QuickCrypto from 'react-native-quick-crypto';
@@ -14,17 +14,13 @@ import { ReactNativeOAuthClient } from "@aquareum/atproto-oauth-client-react-nat
 
 
 export default observer(function Login(_props) {
-  const [code, setCode] = useState('')
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
-
+  const { authenticationStore } = useStores()
 
   // Set up deep link handling when component mounts
   useEffect(() => {
-    // Handle deep links before navigation occurs
-    const subscription = Linking.addEventListener('url', (event) => {
-      handleDeepLink(event);
-    });
+    const subscription = Linking.addEventListener('url', handleDeepLink);
 
     // Handle deep link when app is opened from background
     Linking.getInitialURL().then(url => {
@@ -41,92 +37,55 @@ export default observer(function Login(_props) {
   const handleDeepLink = async (event: { url: string }) => {
     console.log("handleDeepLink", event)
     if (!event.url) return;
-    // Parse the URL - assuming format like skychat://callback?someData=value
     const url = new URL(event.url);
     const path = url.pathname;
     const queryParams = Object.fromEntries(url.searchParams);
+    const client = authenticationStore.client
+
+    if (!client) {
+      // don't redirect if client is not initialized:
+      router.replace("/login");
+      return;
+    }
 
     console.log('Received deep link path:', path);
     console.log('Query params:', queryParams);
 
-    // // Handle the data based on your needs
-    // if (path === 'callback') {
-    //   // Handle successful login
-    //   // You might have session data in queryParams
-    // } else if (path === 'error') {
-    //   // Handle error case
-    //   setError('Login failed');
-    // }
+    console.log("queryParams['session']", !!queryParams['session'])
+    console.log("queryParams['state']", !!queryParams['state'])
+    if (!!queryParams['session'] && !!queryParams['state']) {
+      console.log("GOT SESSION AND STATE");
+      const { session, state } = await client.callback(url.searchParams);
 
-    // router.replace('/chats');
+      console.log("session", session)
+      console.log("state", state)
+      console.log(`logged in as ${session.sub}`)
+
+      router.replace("/chats")
+    }
   };
 
   const handleLogin = async () => {
     console.log("input", username)
+    const client = authenticationStore.client
 
-    // POST /login with our username:
-    // let loginUrl = "https://skychat.fosse.co/login";
-    let clientId = "https://skychat.fosse.co/client-metadata.json";
-    // let handleRes = await fetch(loginUrl, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ handle: username }),
-    // });
+    if (!client) {
+      setError("Client not initialized")
+      setTimeout(() => setError(""), 3000)
+      return
+    }
 
-    let oauthClient = new ReactNativeOAuthClient({
-      clientMetadata: {
-        "redirect_uris": [
-          "https://skychat.fosse.co/oauth/callback"
-        ],
-        "response_types": [
-          "code"
-        ],
-        "grant_types": [
-          "authorization_code",
-          "refresh_token"
-        ],
-        "scope": "atproto transition:generic",
-        "token_endpoint_auth_method": "none",
-        "application_type": "web",
-        "client_id": "https://skychat.fosse.co/client-metadata.json",
-        "client_name": "AT Protocol Express App",
-        "client_uri": "https://skychat.fosse.co",
-        "dpop_bound_access_tokens": true,
-      },
-      handleResolver: 'https://bsky.social',
-      // fetch: fetch,
-      // allowHttp: true,
-      // responseMode: 'query',
-      // plcDirectoryUrl: 'https://plc.directory/v1/directory.json'
-    });
-
-    console.log("test");
-
-    // let res = await oauthClient.init();
-    // console.log("res", res)
-
-    // let oauthClient = await ReactNativeOAuthClient.load({ clientId: clientId, handleResolver: 'https://bsky.social' });
-    let oauthUrl = await oauthClient.authorize(username);
-    console.log("oauthUrl", oauthUrl)
-
-    // let oauthUrl = handleRes.url;
-    // if (oauthUrl === loginUrl) {
-    //   setError("Handle not found")
-    //   setTimeout(() => {
-    //     setError("")
-    //   }, 3000)
-    //   return;
-    // }
-
-    const authRes = await openAuthSessionAsync(oauthUrl.toString())
-
-    console.log("authRes", authRes)
-    // if (authRes.type === 'success') {
-    //   // const params = new URLSearchParams(authRes.url.split('?')[1])
-    //   // // const { session, state } = await oauthClient.callback(params)
-    //   // // console.log(`logged in as ${session.sub}`)
-    //   // console.log(params);
-    // }
+    try {
+      let oauthUrl = await client.authorize(username);
+      console.log("oauthUrl", oauthUrl)
+      
+      const authRes = await openAuthSessionAsync(oauthUrl.toString())
+      console.log("authRes", authRes)
+    } catch (err) {
+      console.error("Login error:", err)
+      setError("Login failed")
+      setTimeout(() => setError(""), 3000)
+    }
   }
 
   return (

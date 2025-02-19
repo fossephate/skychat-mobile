@@ -1,14 +1,21 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
+import { ReactNativeOAuthClient } from "@aquareum/atproto-oauth-client-react-native"
+
+let authClient: ReactNativeOAuthClient | null = null
 
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
   .props({
     authToken: types.maybe(types.string),
     authEmail: "",
+    didAuthenticate: types.optional(types.boolean, false),
   })
   .views((store) => ({
     get isAuthenticated() {
-      return !!store.authToken
+      return store.didAuthenticate
+    },
+    get client() {
+      return authClient
     },
     get validationError() {
       if (store.authEmail.length === 0) return "can't be blank"
@@ -25,9 +32,17 @@ export const AuthenticationStoreModel = types
     setAuthEmail(value: string) {
       store.authEmail = value.replace(/ /g, "")
     },
+    setDidAuthenticate(value: boolean) {
+      store.didAuthenticate = value
+    },
+    setClient(client: ReactNativeOAuthClient) {
+      authClient = client
+    },
     logout() {
       store.authToken = undefined
       store.authEmail = ""
+      store.didAuthenticate = false
+      authClient = null
     },
   }))
 
