@@ -119,7 +119,7 @@ export const createRouter = (ctx: AppContext) => {
       // Initiate the OAuth flow
       try {
         const url = await ctx.oauthClient.authorize(handle, {
-          scope: 'atproto transition:generic',
+          scope: 'atproto transition:generic transition:chat.bsky',
         })
         return res.redirect(url.toString())
       } catch (err) {

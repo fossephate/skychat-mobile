@@ -12,7 +12,7 @@ export const createClient = async (db: Database) => {
       client_name: 'AT Protocol Express App',
       client_id: publicUrl
         ? `${url}/client-metadata.json`
-        : `http://localhost?redirect_uri=${enc(`${url}/oauth/callback`)}&scope=${enc('atproto transition:generic')}`,
+        : `http://localhost?redirect_uri=${enc(`${url}/oauth/callback`)}&scope=${enc('atproto transition:generic transition:chat.bsky')}`,
       client_uri: url,
       redirect_uris: [`${url}/oauth/callback`],
       scope: 'atproto transition:generic transition:chat.bsky',

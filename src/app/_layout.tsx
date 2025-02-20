@@ -61,7 +61,7 @@ export default function Root() {
               "authorization_code",
               "refresh_token"
             ],
-            "scope": "atproto transition:generic",
+            "scope": "atproto transition:generic transition:chat.bsky",
             "token_endpoint_auth_method": "none",
             "application_type": "web",
             "client_id": `${AUTH_SERVER_URL}/client-metadata.json`,
