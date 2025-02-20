@@ -2,9 +2,8 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
 // import { ConvoClient } from "@/services/convo/ConvoClient"
 import { withSetPropAction } from "./helpers/withSetPropAction"
 // import { ConvoClient } from "../../../skychat-lib/src/client";
-import { ConvoClient } from "skychat-lib";
+import { ConvoClient } from "@/utils/convo";
 
-import { Agent } from '@atproto/api'
 
 export const MessageModel = types.model("Message").props({
   text: types.string,
@@ -17,17 +16,6 @@ export const GroupModel = types.model("Group").props({
   name: types.string,
   messages: types.array(MessageModel),
   globalIndex: types.number,
-})
-
-// Add this custom type for ConvoClient
-const ConvoClientModel = types.custom<ConvoClient, ConvoClient>({
-  name: "ConvoClient",
-  fromSnapshot(snapshot: ConvoClient) { return snapshot },
-  toSnapshot(value: ConvoClient) { return value },
-  isTargetType(value: unknown): value is ConvoClient { 
-    return value instanceof ConvoClient 
-  },
-  getValidationMessage() { return "" }
 })
 
 export const ConvoStoreModel = types
