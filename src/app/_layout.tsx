@@ -2,14 +2,14 @@
 import React, { useEffect, useState } from "react"
 import { router, Slot, SplashScreen, Stack } from "expo-router"
 import { useInitialRootStore, useStores } from "src/models"
-import { PrivyProvider, usePrivy } from '@privy-io/expo';
 import { initI18n } from "@/i18n";
 import { customFontsToLoad } from "@/theme";
 import { loadDateFnsLocale } from "@/utils/formatDate";
 import { useThemeProvider } from "@/utils/useAppTheme";
 import { useFonts } from "expo-font";
 import { OAuthSession, ReactNativeOAuthClient, TokenInvalidError, TokenRefreshError, TokenRevokedError } from "@aquareum/atproto-oauth-client-react-native"
-import { AuthProvider } from '@/contexts/auth'
+import { AUTH_SERVER_URL, SKYCHAT_SERVER_URL } from "@/env";
+
 
 SplashScreen.preventAutoHideAsync()
 
@@ -52,7 +52,7 @@ export default function Root() {
         let authClient = new ReactNativeOAuthClient({
           clientMetadata: {
             "redirect_uris": [
-              "https://skychat.fosse.co/oauth/callback"
+              `${AUTH_SERVER_URL}/oauth/callback`
             ],
             "response_types": [
               "code"
@@ -64,9 +64,9 @@ export default function Root() {
             "scope": "atproto transition:generic",
             "token_endpoint_auth_method": "none",
             "application_type": "web",
-            "client_id": "https://skychat.fosse.co/client-metadata.json",
+            "client_id": `${AUTH_SERVER_URL}/client-metadata.json`,
             "client_name": "AT Protocol Express App",
-            "client_uri": "https://skychat.fosse.co",
+            "client_uri": AUTH_SERVER_URL,
             "dpop_bound_access_tokens": true,
           },
           handleResolver: 'https://bsky.social'
@@ -110,15 +110,15 @@ export default function Root() {
           let userId = session.sub
 
           // initialize the convo client
+          console.log("initializing convo client");
           try {
-            console.log("initializing convo client");
             convoStore.initClient(userId);
-            console.log("convo client initialized");
-            await convoStore.connect("https://skychat.fosse.co");
-            console.log("convo client connected");
+            await convoStore.connect(SKYCHAT_SERVER_URL);
           } catch (e) {
             console.error("Failed to connect to convo server", e);
           }
+
+          console.log("convoStore.isConnected", convoStore.isConnected);
           
           if (convoStore.isConnected) {
             router.replace("/chats")

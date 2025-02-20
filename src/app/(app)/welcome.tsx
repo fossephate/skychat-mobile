@@ -15,7 +15,7 @@ const welcomeFace = require("assets/images/welcome-face.png")
 
 export default observer(function WelcomeScreen() {
   const {
-    authenticationStore: { logout },
+    authStore: { logout },
   } = useStores()
 
   const { themed } = useAppTheme()

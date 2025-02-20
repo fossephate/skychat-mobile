@@ -21,13 +21,13 @@ export default function UsersScreen() {
   const [searchQuery, setSearchQuery] = useState("")
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
-  const { authenticationStore } = useStores()
+  const { authStore } = useStores()
   const { themed } = useAppTheme()
 
   useEffect(() => {
     async function fetchFollowing() {
-      const client = authenticationStore.client;
-      const session = authenticationStore.session;
+      const client = authStore.client;
+      const session = authStore.session;
       if (!client || !session) return;
       try {
         const agent = new Agent(session);
@@ -62,7 +62,7 @@ export default function UsersScreen() {
     }
 
     fetchFollowing()
-  }, [authenticationStore.session])
+  }, [authStore.session])
 
   const filteredUsers = users.filter(
     user =>

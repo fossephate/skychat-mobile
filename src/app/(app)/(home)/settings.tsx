@@ -11,10 +11,10 @@ import FontAwesome from '@expo/vector-icons/FontAwesome'
 
 export default function SettingsScreen() {
 
-  const { authenticationStore } = useStores();
+  const { authStore } = useStores();
   const { themed } = useAppTheme();
-  const client = authenticationStore.client;
-  const session = authenticationStore.session;
+  const client = authStore.client;
+  const session = authStore.session;
 
   const [userProfile, setUserProfile] = React.useState({
     displayName: "",
@@ -77,7 +77,7 @@ export default function SettingsScreen() {
     try {
       if (client) {
         // await client.();
-        authenticationStore.setDidAuthenticate(false);
+        authStore.setDidAuthenticate(false);
       }
     } catch (err) {
       console.error("Logout error:", err)

@@ -19,10 +19,21 @@ export const GroupModel = types.model("Group").props({
   globalIndex: types.number,
 })
 
+// Add this custom type for ConvoClient
+const ConvoClientModel = types.custom<ConvoClient, ConvoClient>({
+  name: "ConvoClient",
+  fromSnapshot(snapshot: ConvoClient) { return snapshot },
+  toSnapshot(value: ConvoClient) { return value },
+  isTargetType(value: unknown): value is ConvoClient { 
+    return value instanceof ConvoClient 
+  },
+  getValidationMessage() { return "" }
+})
+
 export const ConvoStoreModel = types
   .model("ConvoStore")
   .props({
-    client: types.maybe(types.frozen<ConvoClient>()),
+    client: types.maybe(types.frozen()), 
     groups: types.array(GroupModel),
     users: types.array(
       types.model({

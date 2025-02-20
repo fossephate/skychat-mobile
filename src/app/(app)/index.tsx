@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default observer(function LoadingScreen() {
 
-  const { authenticationStore } = useStores();
+  const { authStore } = useStores();
   const params = useLocalSearchParams();
 
   console.log("params", params)
@@ -17,7 +17,7 @@ export default observer(function LoadingScreen() {
 
   useEffect(() => {
     (async () => {
-      const client = authenticationStore.client;
+      const client = authStore.client;
       if (params.code && params.state && params.iss && client) {
         let urlParams = new URLSearchParams();
         urlParams.set("code", params.code as string)
@@ -25,7 +25,7 @@ export default observer(function LoadingScreen() {
         urlParams.set("iss", params.iss as string)
         const { session, state } = await client.callback(urlParams)
         console.log(`logged in as ${session.sub}!`)
-        authenticationStore.setSession(session)
+        authStore.setSession(session)
         router.replace("/chats")
       }
     })()

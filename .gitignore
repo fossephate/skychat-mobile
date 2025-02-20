@@ -92,3 +92,4 @@ web-build/
 .yarn/*
 
 .env
+src/env.ts

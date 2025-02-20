@@ -7,12 +7,14 @@ import { useEffect, useState } from 'react'
 import { openAuthSessionAsync } from 'expo-web-browser'
 import { useAppTheme } from "@/utils/useAppTheme"
 
+import { AUTH_SERVER_URL } from "@/env";
+
 
 
 export default observer(function LoginScreen(_props) {
   const [username, setUsername] = useState('');
   const [error, setError] = useState('');
-  const { authenticationStore } = useStores();
+  const { authStore } = useStores();
   const { themed } = useAppTheme();
 
   // // Set up deep link handling when component mounts
@@ -85,7 +87,7 @@ export default observer(function LoginScreen(_props) {
   // };
 
   const handleLogin = async () => {
-    const client = authenticationStore.client
+    const client = authStore.client
 
     if (!client) {
       setError("Client not initialized")
