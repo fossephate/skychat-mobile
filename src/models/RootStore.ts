@@ -7,8 +7,7 @@ import { ConvoStoreModel } from "./ConvoStore"
  * A RootStore model.
  */
 export const RootStoreModel = types.model("RootStore").props({
-  authenticationStore: types.optional(AuthenticationStoreModel, {}),
-  episodeStore: types.optional(EpisodeStoreModel, {}),
+  authStore: types.optional(AuthenticationStoreModel, {}),
   convoStore: types.optional(ConvoStoreModel, {}),
 })
 

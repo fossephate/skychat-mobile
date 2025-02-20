@@ -13,6 +13,7 @@
       "fallbackToCacheTimeout": 0
     },
     "newArchEnabled": true,
+    "developmentClient": true,
     "jsEngine": "hermes",
     "assetBundlePatterns": [
       "**/*"

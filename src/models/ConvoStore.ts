@@ -1,7 +1,8 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
 // import { ConvoClient } from "@/services/convo/ConvoClient"
 import { withSetPropAction } from "./helpers/withSetPropAction"
-import { ConvoClient } from "../../../skychat-lib/src/client";
+// import { ConvoClient } from "../../../skychat-lib/src/client";
+import { ConvoClient } from "skychat-lib";
 
 import { Agent } from '@atproto/api'
 
@@ -33,12 +34,14 @@ export const ConvoStoreModel = types
   })
   .actions(withSetPropAction)
   .actions((store) => ({
-    initClient(name: string) {
-      // TODO: load the client from the saved state:
-      store.client = new ConvoClient(name)
+    initClient(id: string) {
+      // check if a client with that id already exists in persistent storage, and if so, load it:
+      // TODO: implement this
+      store.client = new ConvoClient(id);
     },
 
     async connect(serverAddress: string) {
+      console.log("Connecting to server", serverAddress)
       if (!store.client) throw new Error("Client not initialized")
       await store.client.connectToServer(serverAddress)
       store.setProp("connected", true)

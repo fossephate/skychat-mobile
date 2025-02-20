@@ -60,7 +60,7 @@ const renderChatAvatar = (chat: Chat) => {
   } else {
     return (
       <View style={themed($avatarContainer)}>
-        <View style={[themed($avatar), themed($groupAvatar)]}>
+        <View style={themed($avatar)}>
           <Text style={themed($groupAvatarText)}>
             {chat.name?.[0]?.toUpperCase() || getChatName(chat, SELF_USER.id)[0]}
           </Text>
@@ -240,7 +240,7 @@ const $avatarContainer: ThemedStyle<ViewStyle> = ({ spacing }) => ({
   marginRight: spacing.sm,
 })
 
-const $avatar: ThemedStyle<ImageStyle> = () => ({
+const $avatar: ThemedStyle<ViewStyle> = () => ({
   width: 50,
   height: 50,
   borderRadius: 25,

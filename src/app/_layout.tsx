@@ -29,8 +29,7 @@ export default function Root() {
   const [fontsLoaded, fontError] = useFonts(customFontsToLoad)
   const [isI18nInitialized, setIsI18nInitialized] = useState(false)
   const { themeScheme, setThemeContextOverride, ThemeProvider } = useThemeProvider()
-
-  const { authenticationStore } = useStores()
+  const { authStore, convoStore } = useStores()
 
   useEffect(() => {
     initI18n()
@@ -50,7 +49,7 @@ export default function Root() {
       if (loaded) {
         SplashScreen.hideAsync()
 
-        let client = new ReactNativeOAuthClient({
+        let authClient = new ReactNativeOAuthClient({
           clientMetadata: {
             "redirect_uris": [
               "https://skychat.fosse.co/oauth/callback"
@@ -74,12 +73,12 @@ export default function Root() {
         });
 
         console.log("initializing client");
-        authenticationStore.setClient(client)
+        authStore.setClient(authClient)
 
-        const result = await client.init();
+        const result = await authClient.init();
         console.log("client init results:", result);
 
-        client.addEventListener(
+        authClient.addEventListener(
           'deleted',
           (
             event: CustomEvent<{
@@ -89,10 +88,12 @@ export default function Root() {
           ) => {
             const { sub, cause } = event.detail
             console.error(`Session for ${sub} is no longer available (cause: ${cause})`)
-            authenticationStore.setDidAuthenticate(false);
+            authStore.setDidAuthenticate(false);
             router.replace("/welcome" as any)
           },
         )
+
+
 
         if (result) {
           const { session } = result
@@ -103,9 +104,28 @@ export default function Root() {
           } else {
             console.log(`${session.sub} was restored (last active session)`)
           }
-          authenticationStore.setDidAuthenticate(true)
-          authenticationStore.setSession(session)
-          router.replace("/chats")
+          authStore.setDidAuthenticate(true)
+          authStore.setSession(session)
+
+          let userId = session.sub
+
+          // initialize the convo client
+          try {
+            console.log("initializing convo client");
+            convoStore.initClient(userId);
+            console.log("convo client initialized");
+            await convoStore.connect("https://skychat.fosse.co");
+            console.log("convo client connected");
+          } catch (e) {
+            console.error("Failed to connect to convo server", e);
+          }
+          
+          if (convoStore.isConnected) {
+            router.replace("/chats")
+          } else {
+            // TODO: handle this better: ¯\_(ツ)_/¯
+            router.replace("/error" as any)
+          }
         } else {
           router.replace("/welcome" as any)
         }
