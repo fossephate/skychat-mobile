@@ -21,7 +21,7 @@ export const GroupModel = types.model("Group").props({
 export const ConvoStoreModel = types
   .model("ConvoStore")
   .props({
-    client: types.maybe(types.frozen()), 
+    client: types.optional(types.frozen<any>(), null),
     groups: types.array(GroupModel),
     users: types.array(
       types.model({

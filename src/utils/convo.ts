@@ -84,7 +84,7 @@ export class ConvoClient {
   // }
 
   async connectToServer(address: string): Promise<void> {
-    // this.serverAddress = address;
+    this.serverAddress = address;
 
     const response = await fetch(`${address}/api/connect`, {
       method: 'POST',
@@ -92,12 +92,19 @@ export class ConvoClient {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        user_id: this.userId,
-        serialized_key_package: this.manager.getKeyPackage()
+        "user_id": this.userId,
+        "serialized_key_package": this.manager.getKeyPackage()
       })
     });
 
+    console.log("address: ", address);
+    
+    console.log("serialized_key_package: ", this.manager.getKeyPackage())
+
+    console.log("response: ", response);
+
     if (!response.ok) {
+      // console.error("Failed to connect to server", response);
       throw new Error("Failed to connect to server");
     }
   }
