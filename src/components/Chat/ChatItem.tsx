@@ -7,9 +7,11 @@ import { useAppTheme } from "@/utils/useAppTheme";
 
 export interface User {
   id: string
-  name: string
+  displayName: string
+  handle?: string
   avatar?: string
   online: boolean
+  description?: string
 }
 
 export interface Chat {
@@ -29,7 +31,7 @@ export interface Chat {
 
 const SELF_USER: User = {
   id: "self",
-  name: "You",
+  displayName: "You",
   avatar: "https://i.pravatar.cc/150?u=self",
   online: true,
 }
@@ -40,9 +42,9 @@ const getChatName = (chat: Chat, currentUserId: string): string => {
 
   const otherMembers = chat.members.filter(member => member.id !== currentUserId)
   if (chat.members.length === 2) {
-    return otherMembers[0].name
+    return otherMembers[0].displayName
   }
-  return otherMembers.slice(0, 3).map(m => m.name).join(", ")
+  return otherMembers.slice(0, 3).map(m => m.displayName).join(", ")
 }
 
 const renderChatAvatar = (chat: Chat) => {

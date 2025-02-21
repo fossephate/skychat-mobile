@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd ../skychat-lib
-yarn pack
+npm pack
 
 cd ../skychat-mobile
 rm -rf ./node_modules/skychat-lib

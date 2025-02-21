@@ -11,6 +11,7 @@ import { OAuthSession, ReactNativeOAuthClient, TokenInvalidError, TokenRefreshEr
 import { AUTH_SERVER_URL, SKYCHAT_SERVER_URL } from "@/env";
 
 
+
 SplashScreen.preventAutoHideAsync()
 
 if (__DEV__) {
@@ -115,10 +116,8 @@ export default function Root() {
             convoStore.initClient(userId);
             await convoStore.connect(SKYCHAT_SERVER_URL);
           } catch (e) {
-            console.error("Failed to connect to convo server", e);
+            // console.error("Failed to connect to convo server", e);
           }
-
-          console.log("convoStore.isConnected", convoStore.isConnected);
           
           if (convoStore.isConnected) {
             router.replace("/chats")

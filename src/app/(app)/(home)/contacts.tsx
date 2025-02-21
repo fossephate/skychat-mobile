@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react"
-import { View, ViewStyle, TextStyle, Image, ImageStyle, TextInput } from "react-native"
-import { ListView, Screen, Text } from "src/components"
-import { ThemedStyle } from "src/theme"
+import { View, ViewStyle, TextStyle, Image, ImageStyle, TextInput, TouchableOpacity } from "react-native"
+import { Button, Icon, ListView, Screen, Text, TextField } from "src/components"
+import { colors, ThemedStyle } from "src/theme"
 import { useStores } from "src/models"
 import { Agent } from '@atproto/api'
 import { useAppTheme } from "src/utils/useAppTheme"
 import { ListItem } from "src/components/ListItem"
+import { NewChatModal } from "@/components/Chat/NewChat"
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 interface User {
   did: string
@@ -23,6 +25,13 @@ export default function UsersScreen() {
   const [loading, setLoading] = useState(true)
   const { authStore } = useStores()
   const { themed } = useAppTheme()
+  const [isNewChatModalVisible, setIsNewChatModalVisible] = useState(false)
+
+  const handleNewChat = (selectedUsers: string[]) => {
+    // Handle the selected users here
+    console.log('Selected users:', selectedUsers)
+    // Add your logic to create a new chat
+  }
 
   useEffect(() => {
     async function fetchFollowing() {
@@ -93,29 +102,44 @@ export default function UsersScreen() {
   )
 
   return (
-    <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screenContainer)}>
-      <View style={themed($header)}>
-        <Text tx="contactsScreen:title" preset="heading" style={themed($headerText)} />
-      </View>
-      <View style={themed($searchContainer)}>
-        <TextInput
-          style={themed($searchInput)}
-          tx="contactsScreen:searchPlaceholder"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        // placeholderTextColor={colors.text}
-        />
-      </View>
+    <>
+      <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screenContainer)}>
 
-      <ListView
-        data={filteredUsers}
-        renderItem={renderUser}
-        keyExtractor={(item: any) => item.did}
-        estimatedItemSize={72}
-        contentContainerStyle={themed($listContent)}
-        showsVerticalScrollIndicator={false}
+
+        <View style={themed($header)}>
+          <Text tx="contactsScreen:title" preset="heading" style={themed($headerText)} />
+        </View>
+        <View style={themed($searchContainer)}>
+          <TextField
+            style={themed($searchInput)}
+            placeholderTx="contactsScreen:searchPlaceholder"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+        </View>
+
+        <ListView
+          data={filteredUsers}
+          renderItem={renderUser}
+          keyExtractor={(item: any) => item.did}
+          estimatedItemSize={72}
+          contentContainerStyle={themed($listContent)}
+          showsVerticalScrollIndicator={false}
+        />
+      </Screen>
+
+      <NewChatModal
+        isVisible={isNewChatModalVisible}
+        onClose={() => setIsNewChatModalVisible(false)}
+        onSubmit={handleNewChat}
       />
-    </Screen>
+
+      <Button
+        style={themed($fabButton)}
+        onPress={() => setIsNewChatModalVisible(true)}
+        LeftAccessory={() => <FontAwesome name="plus" size={24} color={colors.background} />}
+      />
+    </>
   )
 }
 
@@ -231,4 +255,22 @@ const $followButtonText: ThemedStyle<TextStyle> = ({ colors }) => ({
   color: colors.background,
   fontSize: 13,
   fontWeight: "600",
+})
+
+// Add the FAB button styles
+const $fabButton: ThemedStyle<ViewStyle> = ({ colors, spacing }) => ({
+  position: 'absolute',
+  bottom: spacing.lg,
+  right: spacing.lg,
+  width: 56,
+  height: 56,
+  borderRadius: 28,
+  backgroundColor: colors.palette.primary500,
+  justifyContent: 'center',
+  alignItems: 'center',
+  elevation: 4,
+  // shadowColor: colors.palette.neutral900,
+  // shadowOffset: { width: 0, height: 2 },
+  // shadowOpacity: 0.25,
+  // shadowRadius: 3.84,
 })

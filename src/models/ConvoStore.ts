@@ -40,14 +40,13 @@ export const ConvoStoreModel = types
     },
 
     async connect(serverAddress: string) {
-      console.log("Connecting to server", serverAddress)
       if (!store.client) throw new Error("Client not initialized")
       await store.client.connectToServer(serverAddress)
       store.setProp("connected", true)
       
-      // Load initial users
-      const users = await store.client.listUsers()
-      store.setProp("users", users)
+      // // Load initial users
+      // const users = await store.client.listUsers()
+      // store.setProp("users", users)
     },
 
     async createGroup(name: string) {

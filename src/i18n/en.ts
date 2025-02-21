@@ -77,6 +77,17 @@ const en = {
     termsOfService: "Terms of Service",
     editProfile: "Edit Profile",
   },
+  newChat: {
+    title: "New Chat",
+    searchPlaceholder: "Search users...",
+    following: "Following",
+    global: "Global",
+    createGroupButton: "Create Group",
+    groupNamePlaceholder: "Enter a name for your group",
+  },
+  chatlistScreen: {
+    title: "Chats",
+  },
 }
 
 export default en

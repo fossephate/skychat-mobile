@@ -6,7 +6,6 @@ import { translate } from "@/i18n"
 import { colors, spacing, ThemedStyle, typography } from "@/theme"
 import { TextStyle, View, ViewStyle } from "react-native"
 import { useSafeAreaInsets } from "react-native-safe-area-context"
-import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useAppTheme, useThemeProvider } from "@/utils/useAppTheme"
 

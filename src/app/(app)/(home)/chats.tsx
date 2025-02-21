@@ -11,12 +11,13 @@ import {
   Modal,
   ScrollView
 } from "react-native"
-import { Screen, Text, ListItem } from "src/components"
+import { Screen, Text, ListItem, TextField } from "src/components"
 import { useRouter } from "expo-router"
 import { router } from "expo-router"
 import { Chat, ChatItem, User } from "src/components/Chat/ChatItem"
 import { colors, spacing, ThemedStyle } from "src/theme"
 import { useAppTheme } from "src/utils/useAppTheme"
+import { useStores } from "@/models/helpers/useStores"
 
 
 const UserSelectDrawer = ({ isVisible, onClose, users }: {
@@ -169,21 +170,21 @@ const generateChats = (): Chat[] => {
 const generateUsers = (): User[] => [
   {
     id: "u1",
-    name: "Alice Smith",
+    displayName: "Alice Smith",
     avatar: `https://i.pravatar.cc/150?u=${Math.random()}`,
     online: true,
     verified: false,
   },
   {
     id: "u2",
-    name: "Bob Johnson",
+    displayName: "Bob Johnson",
     avatar: `https://i.pravatar.cc/150?u=${Math.random()}`,
     online: false,
     verified: false,
   },
   ...Array(20).fill(null).map((_, index) => ({
     id: `u${index + 3}`,
-    name: `User ${index + 3}`,
+    displayName: `User ${index + 3}`,
     avatar: `https://i.pravatar.cc/150?u=user${index + 3}${Math.random()}`,
     online: Math.random() > 0.7,
     verified: Math.random() > 0.8,
@@ -192,29 +193,24 @@ const generateUsers = (): User[] => [
 
 const SELF_USER: User = {
   id: "self",
-  name: "You",
+  displayName: "You",
   avatar: "https://i.pravatar.cc/150?u=self",
   online: true,
 }
 
-export default function ChatsScreen() {
+export default function ChatListScreen() {
   const [searchQuery, setSearchQuery] = useState("")
   const [chats] = useState(generateChats())
   const [users] = useState(generateUsers())
   const [composeDrawerOpen, setComposeDrawerOpen] = useState(false)
   const router = useRouter()
   const { themed } = useAppTheme()
-
-
-
-
+  const { convoStore } = useStores();
 
   return (
     <Screen preset="fixed" safeAreaEdges={["top"]} contentContainerStyle={themed($screenContainer)}>
       <View style={themed($header)}>
-        <Text preset="heading" style={themed($headerText)}>
-          Messages
-        </Text>
+        <Text tx="chatlistScreen:title" preset="heading" style={themed($headerText)} />
         <TouchableOpacity
           style={themed($composeButton)}
           onPress={() => setComposeDrawerOpen(true)}
@@ -224,12 +220,11 @@ export default function ChatsScreen() {
       </View>
 
       <View style={themed($searchContainer)}>
-        <TextInput
+        <TextField
           style={themed($searchInput)}
-          placeholder="Search messages..."
+          placeholderTx="chatlistScreen:searchPlaceholder"
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholderTextColor={themed(({ colors }) => colors.textDim)}
         />
       </View>
 
